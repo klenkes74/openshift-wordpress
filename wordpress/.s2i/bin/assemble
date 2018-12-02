@@ -34,11 +34,11 @@ function download_wordpress() {
     echo "done"
 
     echo -ne "Checking SHA1 checksum ... "
-    TARBALL_SHA1=$(shasum /opt/app-root/downloads/wordpress.tar.gz | cut -d ' ' -f 1)
-    EXPECTS_SHA1=$(curl -Ls http://wordpress.org/wordpress-${VERSION}.tar.gz.sha1)
+    TARBALL_MD5=$(md5sum /opt/app-root/downloads/wordpress.tar.gz | cut -d ' ' -f 1)
+    EXPECTS_MD5=$(curl -Ls http://wordpress.org/wordpress-${VERSION}.tar.gz.md5)
 
     if [ "${TARBALL_SHA1}" != "${EXPECTS_SHA1}" ]; then
-        echo -e "FAILED: WordPress ${VERSION} SHA1 checksum mismatch.\n\t\tThe WordPress tar file that was downloaded does not match the signature that it was expected to have."
+        echo -e "FAILED: WordPress ${VERSION} MD5 checksum mismatch.\n\t\tThe WordPress tar file that was downloaded does not match the signature that it was expected to have."
         echo -e "\t\tTarball has sum ${TARBALL_SHA1}"
         echo -e "\t\tExpected sum is ${EXPECTS_SHA1}"
         exit 1
