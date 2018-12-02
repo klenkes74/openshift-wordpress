@@ -1,5 +1,9 @@
 apiVersion: v1
 kind: Template
+metadata:
+  name: wordpress-s2i
+  labels:
+    template: wordpress-s2i
 parameters:
 - name: 'WORDPRESS_VERSION'
   value: '4.9.8'
@@ -12,7 +16,7 @@ objects:
     name: wordpress-s2i
     labels:
       app: worpress
-      template: wordpress-s2i-bc
+      template: wordpress-s2i
   spec:
     lookupPolicy:
       local: true
@@ -24,7 +28,7 @@ objects:
       template.alpha.openshift.io/wait-for-ready: 'true'
     labels:
       app: wordpress-s2i
-      template: wordpress-s2i-bc
+      template: wordpress-s2i
     name: wordpress-s2i
   spec:
     resources:
@@ -38,6 +42,17 @@ objects:
       to:
         kind: ImageStreamTag
         name: 'wordpress-s2i:${WORDPRESS_VERSION}'
+      imageLabels:
+      - name: 'io.k8s.display-name'
+        value: 'WordPress S2I Builder'
+      - name: 'io.k8s.description'
+        value: 'WordPress Application S2I Builder (based on Apache 2.4 and PHP 7.2 in Red Hat version ${PHP_BASE_IMAGE_VERSION}'
+      - name: 'io.openshift.s2i.scripts-url'
+        value: 'image:///opt/app-root/s2i'
+      - name: 'io.s2i.scripts-url'
+        value: 'image:///opt/app-root/s2i'
+      - name: 'io.openshift.tags'
+        value: 'builder,php,wordpress'
     source:
       git:
         uri: 'https://github.com/klenkes74/openshift-wordpress.git'

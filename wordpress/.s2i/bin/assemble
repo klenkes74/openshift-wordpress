@@ -104,11 +104,11 @@ define('WP_SITEURL',getenv('WORDPRESS_SITE_URL'));" ${CONFIG}
 define('WP_HOME',getenv('WORDPRESS_HOME_URL'));" ${CONFIG}
 
 
-    sed -i "s/'DB_NAME', *'database_name_here'/'DB_NAME', getenv('MYSQL_DATABASE')/" ${CONFIG}
-    sed -i "s/'DB_USER', *'username_here'/'DB_USER', getenv('MYSQL_USER')/" ${CONFIG}
-    sed -i "s/'DB_PASSWORD', *'password_here'/'DB_PASSWORD', getenv('MYSQL_PASSWORD')/" ${CONFIG}
+    sed -i "s/'DB_NAME', *'database_name_here'/'DB_NAME', getenv('DATABASE_NAME')/" ${CONFIG}
+    sed -i "s/'DB_USER', *'username_here'/'DB_USER', getenv('DATABASE_USER')/" ${CONFIG}
+    sed -i "s/'DB_PASSWORD', *'password_here'/'DB_PASSWORD', getenv('DATABASE_PASSWORD')/" ${CONFIG}
     sed -i "s/'DB_HOST', *'localhost'/'DB_HOST', getenv('DATABASE_SERVICE_NAME')/" ${CONFIG}
-    sed -i "s/\$table_prefix *= *'wp_';/\$table_prefix = getenv('MYSQL_TABLE_PREFIX');/" ${CONFIG}
+    sed -i "s/\$table_prefix *= *'wp_';/\$table_prefix = getenv('DATABASE_TABLE_PREFIX');/" ${CONFIG}
     sed -i "s/'WP_DEBUG', *false/'WP_DEBUG', getenv('WP_DEBUG'/" ${CONFIG}
 
     sed -i "s/'AUTH_KEY', *'put your unique phrase here'/'AUTH_KEY', '`secret`'/" ${CONFIG}
@@ -175,20 +175,20 @@ __EOF__
 function call_original_assemble_script() {
     if [ -x /usr/libexec/s2i/assemble ] ; then
         echo "Executing original assemble script"
-        /usr/libexec/s2i/assemble
+        /bin/bash -xeu /usr/libexec/s2i/assemble
         echo "Original assemble script finished"
     else
         echo "No further assemble script called"
     fi
 }
 
+call_original_assemble_script
+
 setup_directories
 get_version WORDPRESS_VERSION
 
 download_wordpress ${WORDPRESS_VERSION}
 download_wpcli
-
-call_original_assemble_script
 
 install_wordpress
 enable_webdav ${WEBDAV_AUTHENTICATION_REALM}
