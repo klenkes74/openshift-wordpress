@@ -198,7 +198,7 @@ objects:
       app: "${APPLICATION_NAME}"
       deploymentConfig: "${APPLICATION_NAME}-app"
     strategy:
-      type: Rolling
+      type: Recreate
     triggers:
       - type: ConfigChange
       - type: ImageChange
