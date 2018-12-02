@@ -16,7 +16,7 @@ function install_authors_notepad_theme() {
     curl -Ls https://www.lichti.de/authors-notepad.tar.gz > authors-notepad.tar.gz
     echo -ne "extracting ... "
     tar xzf authors-notepad.tar.gz
-    rm -y authors-notepad.tar.gz
+    rm -f authors-notepad.tar.gz
 
     echo "done"
     popd &> /dev/null
