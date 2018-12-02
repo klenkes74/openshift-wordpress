@@ -2,10 +2,19 @@
 
 function install_authors_notepad_theme() {
     pushd . &> /dev/null
-    cd /tmp/src/themes
+
     echo -ne "Installing author's notepad theme ... "
 
+    if [ ! -d /tmp/src/themes ] ; then
+        echo -ne "creating /tmp/src/themes ... "
+        mkdir -p /tmp/src/themes
+    fi
+
+    cd /tmp/src/themes
+
+    echo -ne "downloading theme ... "
     curl -Ls https://www.lichti.de/authors-notepad.tar.gz > authors-notepad.tar.gz
+    echo -ne "extracting ... "
     tar xzf authors-notepad.tar.gz
     rm -y authors-notepad.tar.gz
 
