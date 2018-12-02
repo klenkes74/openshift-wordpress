@@ -1,0 +1,39 @@
+#!/bin/bash -xe
+
+
+function basic_installation() {
+    # Call original assemble for basic wordpress installation
+    source /usr/libexec/s2i/assemble
+}
+
+function copy_user_content() {
+    # Copy user provided plugins, themes, language files and configuration
+    # files into the persistent volume. This happens every time the image is
+    # started, which is not ideal. If application is scaled, then could also
+    # occur from multple replicas at the same time. No obvious way to avoid
+    # that, so outstanding question as to whether that will cause any issues.
+
+    if [ -d /tmp/src/plugins ]; then
+        cp -rf /tmp/src/plugins/* wp-content/plugins/ 2>/dev/null || true
+    fi
+
+    if [ -d /tmp/src/themes ]; then
+        cp -rf /tmp/src/themes/* wp-content/themes/ 2>/dev/null || true
+    fi
+
+    if [ -d /tmp/src/languages ]; then
+        cp -rf /tmp/src/languages/* wp-content/languages/ 2>/dev/null || true
+    fi
+
+    if [ -f /tmp/src/configs/wp-config.php ]; then
+        cp -f /tmp/src/wp-config.php wp-config.php
+    fi
+
+    if [ -f /tmp/src/configs/.htaccess ]; then
+        cp -f /tmp/src/.htaccess .htaccess
+    fi
+}
+
+
+basic_installation
+copy_user_content
