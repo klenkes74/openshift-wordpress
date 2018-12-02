@@ -33,6 +33,11 @@ parameters:
   description: 'Size of the data store for user uploads (<HOME>/wp-content/uploads).'
   value: '2Gi'
   required: true
+- name: 'DEBUG_MODE'
+  display: 'Activate DEBUG'
+  description: 'Activate the debugging of WordPress'
+  value: 'false'
+  required: true
 - name: 'WEBSERVER_MEMORY_LIMIT'
   displayName: 'Maximum used memory (Webserver)'
   description: 'Maximum memory usage of this pod.'
@@ -291,6 +296,8 @@ objects:
                 secretKeyRef:
                   name: "${APPLICATION_NAME}-db-config"
                   key: 'password'
+            - name: 'WP_DEBUG'
+              value: "${DEBUG_MODE}"
 - kind: PersistentVolumeClaim
   apiVersion: v1
   metadata:

@@ -109,7 +109,7 @@ define('WP_HOME',getenv('WORDPRESS_HOME_URL'));" ${CONFIG}
     sed -i "s/'DB_PASSWORD', *'password_here'/'DB_PASSWORD', getenv('DATABASE_PASSWORD')/" ${CONFIG}
     sed -i "s/'DB_HOST', *'localhost'/'DB_HOST', getenv('DATABASE_SERVICE_NAME')/" ${CONFIG}
     sed -i "s/\$table_prefix *= *'wp_';/\$table_prefix = getenv('DATABASE_TABLE_PREFIX');/" ${CONFIG}
-    sed -i "s/'WP_DEBUG', *false/'WP_DEBUG', getenv('WP_DEBUG'/" ${CONFIG}
+    sed -i "s/'WP_DEBUG', *false/'WP_DEBUG', getenv('WP_DEBUG')/" ${CONFIG}
 
     sed -i "s/'AUTH_KEY', *'put your unique phrase here'/'AUTH_KEY', '`secret`'/" ${CONFIG}
     sed -i "s/'SECURE_AUTH_KEY', *'put your unique phrase here'/'SECURE_AUTH_KEY', '`secret`'/" ${CONFIG}
