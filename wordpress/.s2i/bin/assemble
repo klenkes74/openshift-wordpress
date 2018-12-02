@@ -172,18 +172,6 @@ __EOF__
     fi
 }
 
-function call_original_assemble_script() {
-    if [ -x /usr/libexec/s2i/assemble ] ; then
-        echo "Executing original assemble script"
-        /bin/bash -xeu /usr/libexec/s2i/assemble
-        echo "Original assemble script finished"
-    else
-        echo "No further assemble script called"
-    fi
-}
-
-call_original_assemble_script
-
 setup_directories
 get_version WORDPRESS_VERSION
 
