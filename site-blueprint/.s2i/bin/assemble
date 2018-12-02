@@ -13,6 +13,15 @@ function copy_user_content() {
     fi
 
     if [ -d /tmp/src/themes ]; then
+        echo -ne "Installing author's notepad theme ... "
+        curl -Ls https://www.lichti.de/authors-notepad.tar.gz > /tmp/src/themes/authors-notepad.tar.gz
+        pushd . &> /dev/null
+        cd /tmp/src/themes
+        tar xzf authors-notepad.tar.gz
+        rm -y authors-notepad.tar.gz
+        popd &> /dev/null
+        echo "done"
+                        
         cp -rf /tmp/src/themes/* wp-content/themes/ 2>/dev/null || true
     fi
 
@@ -22,10 +31,12 @@ function copy_user_content() {
 
     if [ -f /tmp/src/configs/wp-config.php ]; then
         cp -f /tmp/src/wp-config.php wp-config.php
+        chmod 644 wp-config.php
     fi
 
     if [ -f /tmp/src/configs/.htaccess ]; then
         cp -f /tmp/src/.htaccess .htaccess
+        chmod 604 .htaccess
     fi
 }
 
