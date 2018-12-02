@@ -75,8 +75,11 @@ function download_wpcli() {
 
 
 function install_wordpress() {
+    echo -n "Unpacking wordpress ... "
     tar --strip-components=1 -xzf /opt/app-root/downloads/wordpress.tar.gz
+    echo "done"
 
+    echo -n "Configuring wordpress ... "
     CONFIG=wp-config.php
     mv wp-config-sample.php ${CONFIG}
 
@@ -116,6 +119,8 @@ define('WP_HOME',getenv('WORDPRESS_HOME_URL'));" ${CONFIG}
     sed -i "s/'SECURE_AUTH_SALT', *'put your unique phrase here'/'SECURE_AUTH_SALT', '`secret`'/" ${CONFIG}
     sed -i "s/'LOGGED_IN_SALT', *'put your unique phrase here'/'LOGGED_IN_SALT', '`secret`'/" ${CONFIG}
     sed -i "s/'NONCE_SALT', *'put your unique phrase here'/'NONCE_SALT', '`secret`'/" ${CONFIG}
+
+    echo "done"
 }
 
 secret() {
@@ -125,6 +130,8 @@ secret() {
 function enable_webdav() {
     if [ x"$1" != x"" ]; then
         if [ -f /opt/app-root/secrets/webdav/.htdigest ]; then
+        echo -n "Enabling WEBDAV ... "
+
             cat > /opt/app-root/etc/conf.d/90-webdav.conf << __EOF__
 <IfModule !dav_module>
 LoadModule dav_module modules/mod_dav.so'
@@ -155,7 +162,13 @@ Alias /webdav/ /opt/app-root/src/wp-content/uploads
     Require valid-user
 </Location>
 __EOF__
+
+        echo "done"
+        else
+            echo "WEBDAV is not enabled. File '/opt/app-root/secrets/webdav/.htdigest' does not exist!"
         fi
+    else
+        echo "WEBDAV is not enabled. Please set 'WEBDAV_AUTHENTICATION_REALM' to environment"
     fi
 }
 
