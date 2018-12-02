@@ -33,7 +33,7 @@ function download_wordpress() {
     echo ${VERSION} > /opt/app-root/src/wordpress-version.txt
     echo "done"
 
-    echo -ne "Checking SHA1 checksum ... "
+    echo -ne "Checking MD5 checksum ... "
     TARBALL_MD5=$(md5sum /opt/app-root/downloads/wordpress.tar.gz | cut -d ' ' -f 1)
     EXPECTS_MD5=$(curl -Ls http://wordpress.org/wordpress-${VERSION}.tar.gz.md5)
 
@@ -159,10 +159,11 @@ __EOF__
     fi
 }
 
-function call_original_asseble_script() {
+function call_original_assemble_script() {
     if [ -x /usr/libexec/s2i/assemble ] ; then
         echo "Executing original assemble script"
-        exec /usr/libexec/s2i/assemble
+        /usr/libexec/s2i/assemble
+        echo "Original assemble script finished"
     else
         echo "No further assemble script called"
     fi
@@ -174,8 +175,9 @@ get_version WORDPRESS_VERSION
 download_wordpress ${WORDPRESS_VERSION}
 download_wpcli
 
+call_original_assemble_script
+
 install_wordpress
 enable_webdav ${WEBDAV_AUTHENTICATION_REALM}
 
 clean_downloads
-call_original_assemble_script
