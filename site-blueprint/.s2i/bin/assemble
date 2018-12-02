@@ -1,11 +1,6 @@
 #!/bin/bash -xe
 
 
-function basic_installation() {
-    # Call original assemble for basic wordpress installation
-    source /usr/libexec/s2i/assemble
-}
-
 function copy_user_content() {
     # Copy user provided plugins, themes, language files and configuration
     # files into the persistent volume. This happens every time the image is
@@ -35,5 +30,4 @@ function copy_user_content() {
 }
 
 
-basic_installation
 copy_user_content
