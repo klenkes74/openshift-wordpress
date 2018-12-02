@@ -79,6 +79,11 @@ function install_wordpress() {
     tar --strip-components=1 -xzf /opt/app-root/downloads/wordpress.tar.gz
     echo "done"
 
+    echo -n "Removing unwanted plugins ... "
+    rm -f wp-content/plugins/hello.php
+    rm -rf wp-content/plugins/askimet
+    echo "done"
+
     echo -n "Configuring wordpress ... "
     CONFIG=wp-config.php
     mv wp-config-sample.php ${CONFIG}
