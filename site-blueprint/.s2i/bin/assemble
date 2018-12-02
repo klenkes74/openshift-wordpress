@@ -22,6 +22,11 @@ function install_authors_notepad_theme() {
     popd &> /dev/null
 }
 
+function update_preinstalled_plugins() {
+    echo -ne "Updating preinstalled plugins ... "
+    wp install plugin update --all
+    echo "done"
+}
 
 function copy_user_content() {
     # Copy user provided plugins, themes, language files and configuration
@@ -53,5 +58,6 @@ function copy_user_content() {
     fi
 }
 
+update_preinstalled_plugins
 install_authors_notepad_theme
 copy_user_content

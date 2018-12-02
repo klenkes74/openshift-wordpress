@@ -172,10 +172,6 @@ __EOF__
     fi
 }
 
-function update_preinstalled_plugins() {
-    wp install plugin update --all
-}
-
 setup_directories
 get_version WORDPRESS_VERSION
 
@@ -183,7 +179,6 @@ download_wordpress ${WORDPRESS_VERSION}
 download_wpcli
 
 install_wordpress
-update_preinstalled_plugins
 
 enable_webdav ${WEBDAV_AUTHENTICATION_REALM}
 
