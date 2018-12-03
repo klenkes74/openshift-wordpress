@@ -63,10 +63,6 @@ function install_languages() {
         echo -ne "Installing language '${NAME}' ... download '${LANGUAGE}' ... saving '${NAME}.mo' ... "
         curl -Ls https://translate.wordpress.org/projects/wp/${LANGUAGE}/export-translations?format=mo > ${NAME}.mo
 
-        echo -ne "default locale: ${LOCALE} ... "
-        sed -i "/'DB_COLLATE', '');/a\\
-        define('WPLANG',getenv(${LOCALE});" ../../wp-config.php
-
         echo "done"
     done
 
@@ -174,6 +170,9 @@ if (strpos(\$_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false) \$_SERVER['H
 define('WP_SITEURL',getenv('WORDPRESS_SITE_URL'));" ${CONFIG}
     sed -i "/'DB_COLLATE', '');/a\\
 define('WP_HOME',getenv('WORDPRESS_HOME_URL'));" ${CONFIG}
+
+    sed -i "/'DB_COLLATE', '');/a\\
+define('WPLANG',getenv('WPLANG');" ${CONFIG}
 
 
     sed -i "s/'DB_NAME', *'database_name_here'/'DB_NAME', getenv('DATABASE_NAME')/" ${CONFIG}
