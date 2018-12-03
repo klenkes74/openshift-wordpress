@@ -33,8 +33,6 @@ function install_plugins {
         echo "done"
     done
 
-    echo "Installed plugins: $(ls)"
-
     popd . &> /dev/null
 }
 
@@ -57,7 +55,7 @@ function install_languages() {
         echo -ne "Installing language '${NAME}' ... download '${LANGUAGE}' ... saving '${NAME}.mo' ... "
         curl -Ls https://translate.wordpress.org/projects/wp/${LANGUAGE}/export-translations?format=mo > ${NAME}.mo
 
-        echo "default locale: ${LOCALE} ... "
+        echo -ne "default locale: ${LOCALE} ... "
         sed -i "/'DB_COLLATE', '');/a\\
         define('WPLANG',getenv(${LOCALE});" wp-config.php
 
