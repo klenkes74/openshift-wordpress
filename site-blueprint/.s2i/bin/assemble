@@ -9,36 +9,44 @@ function create_directory() {
     fi
 }
 
-function install_authors_notepad_theme() {
+function install plungs {
     pushd . &> /dev/null
 
-    echo -ne "Installing author's notepad theme ... "
+    create_directory /tmp/src/plugins
+    cd /tmp/src/plugins
 
-    create_directory /tmp/src/themes
+    for PLUGIN in `cat ../plugins.cfg` ; do
+        echo -ne "Install plugin '${PLUGIN}' ... downloading ... "
+        curl -Ls https://downloads.wordpress.org/plugin/${PLUGIN}.zip > ${PLUGIN}.zip
 
-    cd /tmp/src/themes
+        echo -ne "unpacking ... "
+        unzip ${PLUGIN}.zip
 
-    echo -ne "downloading theme ... "
-    curl -Ls https://www.lichti.de/authors-notepad.tar.gz > authors-notepad.tar.gz
-    echo -ne "extracting ... "
-    tar xzf authors-notepad.tar.gz
-    rm -f authors-notepad.tar.gz
+        echo -ne "deleting ZIP-file ... "
+        rm -f ${PLUGIN}.zip
 
-    echo "done"
-    popd &> /dev/null
+        echo "done"
+    done
+
+    popd . &> /dev/null
 }
 
-function install_german_language_pack() {
+function install_languages() {
     pushd . &> /dev/null
-
-    echo -ne "Installing german language pack ... "
 
     create_directory /tmp/src/languages
     cd /tmp/src/languages
 
-    curl -Ls https://translate.wordpress.org/projects/wp/4.9.x/de/default/export-translations?format=mo > german.mo
+    for LANGUAGE_DEFINITION in `cat ../languages.cfg` ; do
+        LANGUAGE="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f1)"
+        NAME="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f2)"
+
+        echo -ne "Installing language '${NAME}' ... download '${LANGUAGE}' ... saving '${NAME}.mo' ... "
+        curl -Ls https://translate.wordpress.org/projects/wp/${LANGUAGE}/export-translations?format=mo > ${NAME}.mo
     
-    echo "done"
+        echo "done"
+    done
+
     popd &> /dev/null
 }
 
@@ -72,5 +80,28 @@ function copy_user_content() {
     fi
 }
 
+function install_authors_notepad_theme() {
+    pushd . &> /dev/null
+
+    echo -ne "Installing author's notepad theme ... "
+
+    create_directory /tmp/src/themes
+
+    cd /tmp/src/themes
+
+    echo -ne "downloading theme ... "
+    curl -Ls https://www.lichti.de/authors-notepad.tar.gz > authors-notepad.tar.gz
+    echo -ne "extracting ... "
+    tar xzf authors-notepad.tar.gz
+    rm -f authors-notepad.tar.gz
+
+    echo "done"
+    popd &> /dev/null
+}
+
+
+install_languages
+install_plugins
 install_authors_notepad_theme
+
 copy_user_content
