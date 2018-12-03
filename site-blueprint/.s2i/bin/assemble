@@ -9,7 +9,7 @@ function create_directory() {
     fi
 }
 
-function install plungs {
+function install_plugins {
     pushd . &> /dev/null
 
     create_directory /tmp/src/plugins
