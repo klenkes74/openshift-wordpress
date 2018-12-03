@@ -12,15 +12,15 @@ function create_directory() {
 function install_plugins {
     pushd . &> /dev/null
 
-    create_directory /tmp/src/plugins
-    cd /tmp/src/plugins
+    create_directory ./wp-content/plugins
+    cd ./wp-content/plugins
 
     for PLUGIN in `cat ../plugins.cfg` ; do
         echo -ne "Install plugin '${PLUGIN}' ... downloading ... "
         curl -Ls https://downloads.wordpress.org/plugin/${PLUGIN}.zip > ${PLUGIN}.zip
 
         echo -ne "unpacking ... "
-        unzip ${PLUGIN}.zip
+        unzip -qq ${PLUGIN}.zip
 
         echo -ne "deleting ZIP-file ... "
         rm -f ${PLUGIN}.zip
@@ -28,14 +28,16 @@ function install_plugins {
         echo "done"
     done
 
+    echo "Installed plugins: $(ls)"
+
     popd . &> /dev/null
 }
 
 function install_languages() {
     pushd . &> /dev/null
 
-    create_directory /tmp/src/languages
-    cd /tmp/src/languages
+    create_directory ./wp-content/languages/
+    cd ./wp-content/languages/
 
     for LANGUAGE_DEFINITION in `cat ../languages.cfg` ; do
         LANGUAGE="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f1)"
@@ -47,6 +49,8 @@ function install_languages() {
         echo "done"
     done
 
+    echo "Installed languages: $(ls)"
+
     popd &> /dev/null
 }
 
@@ -56,18 +60,6 @@ function copy_user_content() {
     # started, which is not ideal. If application is scaled, then could also
     # occur from multple replicas at the same time. No obvious way to avoid
     # that, so outstanding question as to whether that will cause any issues.
-
-    if [ -d /tmp/src/plugins ]; then
-        cp -rf /tmp/src/plugins/* wp-content/plugins/ 2>/dev/null || true
-    fi
-
-    if [ -d /tmp/src/themes ]; then
-        cp -rf /tmp/src/themes/* wp-content/themes/ 2>/dev/null || true
-    fi
-
-    if [ -d /tmp/src/languages ]; then
-        cp -rf /tmp/src/languages/* wp-content/languages/ 2>/dev/null || true
-    fi
 
     if [ -f /tmp/src/configs/wp-config.php ]; then
         cp -f /tmp/src/wp-config.php wp-config.php
@@ -85,9 +77,8 @@ function install_authors_notepad_theme() {
 
     echo -ne "Installing author's notepad theme ... "
 
-    create_directory /tmp/src/themes
-
-    cd /tmp/src/themes
+    create_directory ./wp-content/themes/
+    cd ./wp-content/themes/
 
     echo -ne "downloading theme ... "
     curl -Ls https://www.lichti.de/authors-notepad.tar.gz > authors-notepad.tar.gz
