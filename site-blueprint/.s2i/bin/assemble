@@ -83,6 +83,8 @@ function copy_user_content() {
 function install_authors_notepad_theme() {
     pushd . &> /dev/null
 
+    ls -l . wp-content
+
     echo -ne "Installing author's notepad theme ... "
 
     create_directory ./wp-content/themes/
