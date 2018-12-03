@@ -6,6 +6,75 @@ function setup_directories() {
     PATH="${PATH}:/opt/app-root/bin"
 }
 
+function create_directory() {
+    DIRECTORY=$1
+
+    if [ ! -d ${DIRECTORY} ] ; then
+        echo -ne "creating ${DIRECTORY} ... "
+        mkdir -p ${DIRECTORY}
+    fi
+}
+
+function install_plugins {
+    if [ ! -f /tmp/src/plugins.cfg ] ; then
+        echo "No plugins to install."
+
+        return
+    fi
+    pushd . &> /dev/null
+
+    create_directory ./wp-content/plugins
+    cd ./wp-content/plugins
+
+    for PLUGIN in `cat /tmp/src/plugins.cfg` ; do
+        echo -ne "Install plugin '${PLUGIN}' ... downloading ... "
+        curl -Ls https://downloads.wordpress.org/plugin/${PLUGIN}.zip > ${PLUGIN}.zip
+
+        echo -ne "unpacking ... "
+        unzip -qq ${PLUGIN}.zip
+
+        echo -ne "deleting ZIP-file ... "
+        rm -f ${PLUGIN}.zip
+
+        echo "done"
+    done
+
+    echo "Installed plugins: $(ls)"
+
+    popd . &> /dev/null
+}
+
+function install_languages() {
+    if [ ! -f /tmp/src/languages.cfg ] ; then
+        echo "No languages to install."
+        return
+    fi
+
+    pushd . &> /dev/null
+
+    create_directory ./wp-content/languages/
+    cd ./wp-content/languages/
+
+    for LANGUAGE_DEFINITION in `cat /tmp/src/languages.cfg` ; do
+        LANGUAGE="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f1)"
+        NAME="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f2)"
+        LOCALE="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f3)"
+
+        echo -ne "Installing language '${NAME}' ... download '${LANGUAGE}' ... saving '${NAME}.mo' ... "
+        curl -Ls https://translate.wordpress.org/projects/wp/${LANGUAGE}/export-translations?format=mo > ${NAME}.mo
+
+        echo "default locale: ${LOCALE} ... "
+        sed -i "/'DB_COLLATE', '');/a\\
+        define('WPLANG',getenv(${LOCALE});" wp-config.php
+
+        echo "done"
+    done
+
+    echo "Installed languages: $(ls)"
+
+    popd &> /dev/null
+}
+
 function get_version() {
   local  __resultvar=$1
   local myresult=''
@@ -184,6 +253,8 @@ download_wordpress ${WORDPRESS_VERSION}
 download_wpcli
 
 install_wordpress
+install_languages
+install_plugins
 
 enable_webdav ${WEBDAV_AUTHENTICATION_REALM}
 
