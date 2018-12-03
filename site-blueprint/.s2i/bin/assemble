@@ -10,6 +10,11 @@ function create_directory() {
 }
 
 function install_plugins {
+    if [ ! -f /tmp/src/plugins.cfg ] ; then
+        echo "No plugins to install."
+
+        return
+    fi
     pushd . &> /dev/null
 
     create_directory ./wp-content/plugins
@@ -34,6 +39,11 @@ function install_plugins {
 }
 
 function install_languages() {
+    if [ ! -f /tmp/src/languages.cfg ] ; then
+        echo "No languages to install."
+        return
+    fi
+    
     pushd . &> /dev/null
 
     create_directory ./wp-content/languages/
