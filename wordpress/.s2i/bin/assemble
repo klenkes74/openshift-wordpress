@@ -81,7 +81,7 @@ function install_wordpress() {
 
     echo -n "Removing unwanted plugins ... "
     rm -f wp-content/plugins/hello.php
-    rm -rf wp-content/plugins/askimet
+    rm -rf wp-content/plugins/akismet
     echo "done"
 
     echo -n "Configuring wordpress ... "
