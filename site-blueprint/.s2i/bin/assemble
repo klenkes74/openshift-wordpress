@@ -94,6 +94,8 @@ function install_authors_notepad_theme() {
     tar xzf authors-notepad.tar.gz
     rm -f authors-notepad.tar.gz
 
+    ls -l
+
     echo "done"
     popd &> /dev/null
 }
