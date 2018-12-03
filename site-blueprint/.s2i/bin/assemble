@@ -15,7 +15,7 @@ function install_plugins {
     create_directory ./wp-content/plugins
     cd ./wp-content/plugins
 
-    for PLUGIN in `cat ../plugins.cfg` ; do
+    for PLUGIN in `cat /tmp/src/plugins.cfg` ; do
         echo -ne "Install plugin '${PLUGIN}' ... downloading ... "
         curl -Ls https://downloads.wordpress.org/plugin/${PLUGIN}.zip > ${PLUGIN}.zip
 
@@ -39,7 +39,7 @@ function install_languages() {
     create_directory ./wp-content/languages/
     cd ./wp-content/languages/
 
-    for LANGUAGE_DEFINITION in `cat ../languages.cfg` ; do
+    for LANGUAGE_DEFINITION in `cat /tmp/src/languages.cfg` ; do
         LANGUAGE="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f1)"
         NAME="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f2)"
 
