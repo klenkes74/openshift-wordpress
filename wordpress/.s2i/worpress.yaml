@@ -4,6 +4,19 @@ metadata:
   name: wordpress
   labels:
     template: wordpress
+  annotations:
+    description: >-
+      A Wordpress application blueprint. For more information please check
+      https://github.com/klenkes74/openshift-wordpress/blob/master/README.md.
+    iconClass: icon-apache
+    openshift.io/display-name: Wordpress Application Blueprint
+    openshift.io/documentation-url: 'https://github.com/klenkes74/openshift-wordpress'
+    openshift.io/long-description: >-
+      This image is an S2I builder running on top of the Wordpress S2I Builder
+    openshift.io/provider-display-name: 'Kaiserpfalz EDV-Service, Roland T. Lichti'
+    openshift.io/support-url: 'https://www.kaiserpfalz-edv.de'
+    tags: 'httpd,php,wordpress,cms'
+    template.openshift.io/bindable: 'true'
 parameters:
 - name: 'APPLICATION_NAME'
   displayName: 'Site'

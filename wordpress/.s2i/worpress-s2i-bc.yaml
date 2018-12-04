@@ -4,6 +4,20 @@ metadata:
   name: wordpress-s2i
   labels:
     template: wordpress-s2i
+  annotations:
+    description: >-
+      A Wordpress S2I builder. For more information please check
+      https://github.com/klenkes74/openshift-wordpress/blob/master/README.md.
+    iconClass: icon-apache
+    openshift.io/display-name: Wordpress S2I Builder
+    openshift.io/documentation-url: 'https://github.com/klenkes74/openshift-wordpress'
+    openshift.io/long-description: >-
+      This image is an S2I builder running on top of PHP with a predefined Wordpress
+      Version.
+    openshift.io/provider-display-name: 'Kaiserpfalz EDV-Service, Roland T. Lichti'
+    openshift.io/support-url: 'https://www.kaiserpfalz-edv.de'
+    tags: 'httpd,php,wordpress,cms'
+    template.openshift.io/bindable: 'true'
 parameters:
 - name: 'WORDPRESS_VERSION'
   displayName: 'Wordpress Version'
@@ -67,9 +81,9 @@ objects:
       - name: 'io.k8s.description'
         value: 'WordPress Application S2I Builder (based on Apache 2.4 and PHP 7.2 in Red Hat version ${PHP_BASE_IMAGE_VERSION}'
       - name: 'io.openshift.s2i.scripts-url'
-        value: 'image:///opt/app-root/s2i'
+        value: 'image:///usr/libexec/s2i'
       - name: 'io.s2i.scripts-url'
-        value: 'image:///opt/app-root/s2i'
+        value: 'image:///usr/libexec/s2i'
       - name: 'io.openshift.tags'
         value: 'builder,php,wordpress'
       - name: 'template'
