@@ -6,9 +6,28 @@ metadata:
     template: wordpress-s2i
 parameters:
 - name: 'WORDPRESS_VERSION'
+  displayName: 'Wordpress Version'
   value: '4.9.8'
+  required: true
 - name: 'PHP_BASE_IMAGE_VERSION'
+  displayName: 'PHP Version to use'
   value: 'latest'
+  required: true
+- name: 'REPOSITORY'
+  displayName: 'Git Repository'
+  description: 'Git repository containing all site specific data'
+  value: 'https://github.com/klenkes74/openshift-wordpress.git'
+  required: true
+- name: 'REPOSITORY_CONTEXTDIR'
+  displayName: 'Context Directory'
+  description: 'Directory within repository.'
+  value: '/wordpress'
+  required: true
+- name: 'REPOSITORY_TAG'
+  displayName: 'Git Tag'
+  description: 'Tag inside the git repo to use.'
+  value: 'master'
+  required: true
 objects:
 - kind: ImageStream
   apiVersion: v1
@@ -53,17 +72,19 @@ objects:
         value: 'image:///opt/app-root/s2i'
       - name: 'io.openshift.tags'
         value: 'builder,php,wordpress'
+      - name: 'template'
+        value: 'wordpress-s2i'
     source:
       git:
-        uri: 'https://github.com/klenkes74/openshift-wordpress.git'
-        ref: "develop"
-      contextDir: "/wordpress"
+        uri: "${REPOSITORY}"
+        ref: "${REPOSITORY_TAG}"
+      contextDir: "${REPOSITORY_CONTEXTDIR}"
       type: Git
     strategy:
       sourceStrategy:
         env:
-        - name: WORDPRESS_VERSION
-          value: ${WORDPRESS_VERSION}
+        - name: 'WORDPRESS_VERSION'
+          value: '${WORDPRESS_VERSION}'
         from:
           kind: ImageStreamTag
           name: 'php72:${PHP_BASE_IMAGE_VERSION}'
