@@ -41,11 +41,11 @@ function install_plugins {
 
     echo "Installed plugins: $(ls)"
 
-    popd . &> /dev/null
+    popd &> /dev/null
 }
 
 function install_languages() {
-    if [ ! -f /tmp/src/languages.cfg ] ; then
+    if [ ! -f languages.cfg ] ; then
         echo "No languages to install."
         return
     fi
@@ -55,7 +55,7 @@ function install_languages() {
     create_directory ./wp-content/languages/
     cd ./wp-content/languages/
 
-    for LANGUAGE_DEFINITION in `cat /tmp/src/languages.cfg` ; do
+    for LANGUAGE_DEFINITION in `cat ../../languages.cfg` ; do
         LANGUAGE="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f1)"
         NAME="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f2)"
         LOCALE="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f3)"

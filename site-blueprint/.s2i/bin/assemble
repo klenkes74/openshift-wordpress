@@ -33,7 +33,7 @@ function install_plugins {
         echo "done"
     done
 
-    popd . &> /dev/null
+    popd &> /dev/null
 }
 
 function install_languages() {
@@ -83,8 +83,6 @@ function copy_user_content() {
 function install_authors_notepad_theme() {
     pushd . &> /dev/null
 
-    ls -l . wp-content
-
     echo -ne "Installing author's notepad theme ... "
 
     create_directory ./wp-content/themes/
@@ -95,8 +93,6 @@ function install_authors_notepad_theme() {
     echo -ne "extracting ... "
     tar xzf authors-notepad.tar.gz
     rm -f authors-notepad.tar.gz
-
-    ls -l
 
     echo "done"
     popd &> /dev/null
