@@ -45,6 +45,7 @@ function install_languages() {
     pushd . &> /dev/null
 
     create_directory ./wp-content/languages/
+    echo "done"
     cd ./wp-content/languages/
 
     for LANGUAGE_DEFINITION in `cat /tmp/src/languages.cfg` ; do
