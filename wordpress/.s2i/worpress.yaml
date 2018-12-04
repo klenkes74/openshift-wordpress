@@ -264,7 +264,6 @@ objects:
           readinessProbe:
             httpGet:
               scheme: 'HTTP'
-              host: 'localhost'
               port: 8080
               path: '/wp-admin/install.php'
               httpHeaders:
@@ -272,13 +271,12 @@ objects:
                   value: 'https'
             failureThreshold: 3
             successThreshold: 1
-            initialDelayTimeout: 15
+            initialDelayTimeout: 5
             timeoutSeconds: 1
-            periodSeconds: 10
+            periodSeconds: 5
           livenessProbe:
             httpGet:
               scheme: 'HTTP'
-              host: 'localhost'
               port: 8080
               path: '/wp-admin/install.php'
             httpHeaders:
@@ -286,9 +284,9 @@ objects:
                 value: 'https'
             failureThreshold: 3
             successThreshold: 1
-            initialDelayTimeout: 15
+            initialDelayTimeout: 5
             timeoutSeconds: 1
-            periodSeconds: 10
+            periodSeconds: 5
           volumeMounts:
             - name: 'upload-data'
               mountPath: '/opt/app-root/src/wp-content/uploads'
@@ -368,7 +366,7 @@ objects:
     host: "${APPLICATION_URL}"
     to:
       kind: Service
-      name: "${APPLICATION_NAME}"
+      name: "${APPLICATION_NAME}-app"
       weight: 100
     port:
       targetPort: 8080
