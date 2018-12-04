@@ -1,4 +1,10 @@
 #!/bin/bash -e
+#
+# Copyright (C) 2018  Kaiserpfalz-EDV Service, Roland T. Lichti
+# This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+# This is free software, and you are welcome to redistribute it
+# under certain conditions; type `show c' for details.
+#
 
 function setup_directories() {
     mkdir -p /opt/app-root/downloads

@@ -1,7 +1,15 @@
+# Copyright (C) 2018  Kaiserpfalz-EDV Service, Roland T. Lichti
+
+# This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+# This is free software, and you are welcome to redistribute it
+# under certain conditions; type `show c' for details.
+
 <IfModule mod_rewrite.c>
     RewriteEngine   On
     RewriteBase     /
+
     RewriteRule     ^index\.php$ - [L]
+
     RewriteCond     %{REQUEST_FILENAME} !-f
     RewriteCond     %{REQUEST_FILENAME} !-d
     RewriteRule     . /index.php [L]
