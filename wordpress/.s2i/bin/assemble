@@ -255,3 +255,5 @@ enable_webdav ${WEBDAV_AUTHENTICATION_REALM}
 
 
 clean_downloads
+
+ls -la /opt/app-root/s2i

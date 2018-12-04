@@ -110,4 +110,4 @@ install_authors_notepad_theme
 
 copy_user_content
 
-echo "DONE"
+ls -la /opt/app-root/s2i
