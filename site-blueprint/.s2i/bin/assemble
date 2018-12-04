@@ -1,0 +1,112 @@
+#!/bin/bash -e
+
+function create_directory() {
+    DIRECTORY=$1
+
+    if [ ! -d ${DIRECTORY} ] ; then
+        echo -ne "creating ${DIRECTORY} ... "
+        mkdir -p ${DIRECTORY}
+    fi
+}
+
+function install_plugins {
+    if [ ! -f /tmp/src/plugins.cfg ] ; then
+        echo "No plugins to install."
+
+        return
+    fi
+    pushd . &> /dev/null
+
+    create_directory ./wp-content/plugins
+    cd ./wp-content/plugins
+
+    for PLUGIN in `cat /tmp/src/plugins.cfg` ; do
+        echo -ne "Install plugin '${PLUGIN}' ... downloading ... "
+        curl -Ls https://downloads.wordpress.org/plugin/${PLUGIN}.zip > ${PLUGIN}.zip
+
+        echo -ne "unpacking ... "
+        unzip -qq ${PLUGIN}.zip
+
+        echo -ne "deleting ZIP-file ... "
+        rm -f ${PLUGIN}.zip
+
+        echo "done"
+    done
+
+    popd &> /dev/null
+}
+
+function install_languages() {
+    if [ ! -f /tmp/src/languages.cfg ] ; then
+        echo "No languages to install."
+        return
+    fi
+    
+    pushd . &> /dev/null
+
+    create_directory ./wp-content/languages/
+    cd ./wp-content/languages/
+
+    for LANGUAGE_DEFINITION in `cat /tmp/src/languages.cfg` ; do
+        LANGUAGE="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f1)"
+        NAME="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f2)"
+        LOCALE="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f3)"
+
+        echo -ne "Installing language '${NAME}' ... download '${LANGUAGE}' ... saving '${NAME}.mo' ... "
+        curl -Ls https://translate.wordpress.org/projects/wp/${LANGUAGE}/export-translations?format=mo > ${NAME}.mo
+
+
+        echo "done"
+    done
+
+    popd &> /dev/null
+}
+
+function copy_user_content() {
+    # Copy user provided plugins, themes, language files and configuration
+    # files into the persistent volume. This happens every time the image is
+    # started, which is not ideal. If application is scaled, then could also
+    # occur from multple replicas at the same time. No obvious way to avoid
+    # that, so outstanding question as to whether that will cause any issues.
+
+    if [ -f /tmp/src/configs/wp-config.php ]; then
+        echo -ne "Copying provided wp-config.php ... "
+        cp -f /tmp/src/configs/wp-config.php wp-config.php
+        chmod 644 wp-config.php
+        echo "done"
+    fi
+
+    if [ -f /tmp/src/configs/.htaccess ]; then
+        echo -ne "Copying provided .htaccess ... "
+        cp -f /tmp/src/configs/.htaccess .htaccess
+        chmod 644 .htaccess
+        echo "done"
+    fi
+}
+
+function install_authors_notepad_theme() {
+    pushd . &> /dev/null
+
+    echo -ne "Installing author's notepad theme ... "
+
+    create_directory ./wp-content/themes/
+    cd ./wp-content/themes/
+
+    echo -ne "downloading theme ... "
+    curl -Ls https://www.lichti.de/authors-notepad.tar.gz > authors-notepad.tar.gz
+    echo -ne "extracting ... "
+    tar xzf authors-notepad.tar.gz
+    rm -f authors-notepad.tar.gz
+
+    echo "done"
+    popd &> /dev/null
+}
+
+
+install_languages
+install_plugins
+install_authors_notepad_theme
+
+copy_user_content
+
+echo "DONE"

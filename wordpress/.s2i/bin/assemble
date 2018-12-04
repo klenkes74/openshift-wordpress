@@ -1,0 +1,256 @@
+#!/bin/bash -e
+
+function setup_directories() {
+    mkdir -p /opt/app-root/downloads
+    mkdir -p /opt/app-root/bin
+    PATH="${PATH}:/opt/app-root/bin"
+}
+
+function create_directory() {
+    DIRECTORY=$1
+
+    if [ ! -d ${DIRECTORY} ] ; then
+        echo -ne "creating ${DIRECTORY} ... "
+        mkdir -p ${DIRECTORY}
+    fi
+}
+
+function install_plugins {
+    if [ ! -f /tmp/src/plugins.cfg ] ; then
+        echo "No plugins to install."
+
+        return
+    fi
+    pushd . &> /dev/null
+
+    create_directory ./wp-content/plugins
+    cd ./wp-content/plugins
+
+    for PLUGIN in `cat /tmp/src/plugins.cfg` ; do
+        echo -ne "Install plugin '${PLUGIN}' ... downloading ... "
+        curl -Ls https://downloads.wordpress.org/plugin/${PLUGIN}.zip > ${PLUGIN}.zip
+
+        echo -ne "unpacking ... "
+        unzip -qq ${PLUGIN}.zip
+
+        echo -ne "deleting ZIP-file ... "
+        rm -f ${PLUGIN}.zip
+
+        echo "done"
+    done
+
+    echo "Installed plugins: $(ls)"
+
+    popd &> /dev/null
+}
+
+function install_languages() {
+    if [ ! -f languages.cfg ] ; then
+        echo "No languages to install."
+        return
+    fi
+
+    pushd . &> /dev/null
+
+    create_directory ./wp-content/languages/
+    cd ./wp-content/languages/
+
+    for LANGUAGE_DEFINITION in `cat ../../languages.cfg` ; do
+        LANGUAGE="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f1)"
+        NAME="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f2)"
+        LOCALE="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f3)"
+
+        echo -ne "Installing language '${NAME}' ... download '${LANGUAGE}' ... saving '${NAME}.mo' ... "
+        curl -Ls https://translate.wordpress.org/projects/wp/${LANGUAGE}/export-translations?format=mo > ${NAME}.mo
+
+        echo "done"
+    done
+
+    popd &> /dev/null
+}
+
+function get_version() {
+  local  __resultvar=$1
+  local myresult=''
+
+  if [ -z ${!__resultvar+x} ] ; then
+      echo -ne "Checking current wordpress version ... "
+      myresult=$(curl -s "https://api.wordpress.org/core/version-check/1.7/" | python -c 'import sys, json; latest = json.load(sys.stdin)["offers"][0]; print(latest["version"] if latest["response"] == "upgrade" else "4.9.8")')
+      echo "${myresult} ... done"
+  else
+      myresult=${!__resultvar}
+      echo "Fixed version: ${myresult}"
+  fi
+
+  if [[ "$__resultvar" ]]; then
+      eval $__resultvar="'$myresult'"
+  else
+      echo "$myresult"
+  fi
+}
+
+function download_wordpress() {
+    VERSION=$1
+    echo -ne "Downloading Wordpress ${VERSION} ... "
+    curl -Ls http://wordpress.org/wordpress-${VERSION}.tar.gz > /opt/app-root/downloads/wordpress.tar.gz
+    echo ${VERSION} > /opt/app-root/src/wordpress-version.txt
+    echo "done"
+
+    echo -ne "Checking MD5 checksum ... "
+    TARBALL_MD5=$(md5sum /opt/app-root/downloads/wordpress.tar.gz | cut -d ' ' -f 1)
+    EXPECTS_MD5=$(curl -Ls http://wordpress.org/wordpress-${VERSION}.tar.gz.md5)
+
+    if [ "${TARBALL_SHA1}" != "${EXPECTS_SHA1}" ]; then
+        echo -e "FAILED: WordPress ${VERSION} MD5 checksum mismatch.\n\t\tThe WordPress tar file that was downloaded does not match the signature that it was expected to have."
+        echo -e "\t\tTarball has sum ${TARBALL_SHA1}"
+        echo -e "\t\tExpected sum is ${EXPECTS_SHA1}"
+        exit 1
+    else
+        echo "done"
+    fi
+}
+
+function clean_downloads() {
+    if [ -d /opt/app-root/downloads ] ; then
+        echo -ne "Removing downloads folder ... "
+        rm -rf /opt/app-root/downloads
+        echo "done"
+    else
+        echo "No downloads folder to remove"
+    fi
+}
+
+function download_wpcli() {
+    echo -ne "Downloading Wordpress CLI ... "
+    curl -Ls https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar > /opt/app-root/bin/wp
+    echo "done"
+
+    chmod +x /opt/app-root/bin/wp
+
+    echo -ne "Check wp-cli ... "
+    if [ "WP-CLI 2.0.1" == "$(/opt/app-root/bin/wp --version)" ] ; then
+        echo "ok"
+    else
+        echo "FAILED"
+        exit 1
+    fi
+}
+
+
+function install_wordpress() {
+    echo -n "Unpacking wordpress ... "
+    tar --strip-components=1 -xzf /opt/app-root/downloads/wordpress.tar.gz
+    echo "done"
+
+    echo -n "Removing unwanted plugins ... "
+    rm -f wp-content/plugins/hello.php
+    rm -rf wp-content/plugins/akismet
+    echo "done"
+
+    echo -n "Configuring wordpress ... "
+    CONFIG=wp-config.php
+    mv wp-config-sample.php ${CONFIG}
+
+    sed -i "/'DB_COLLATE', '');/a\\
+define('FS_METHOD', 'direct');" ${CONFIG}
+
+    # Edit the wp-config-sample.php to force use of a secure connection
+    # for login and adminstration.
+
+    sed -i "/'DB_COLLATE', '');/a\\
+define( 'FORCE_SSL_ADMIN', true );" ${CONFIG}
+
+    # Edit the wp-config-sample.php to ensure that static files are served
+    # up over same protocol as request to avoid mixed content errors.
+
+    sed -i "/'DB_COLLATE', '');/a\\
+if (strpos(\$_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false) \$_SERVER['HTTPS']='on';" ${CONFIG}
+
+    sed -i "/'DB_COLLATE', '');/a\\
+define('WP_SITEURL',getenv('WORDPRESS_SITE_URL'));" ${CONFIG}
+    sed -i "/'DB_COLLATE', '');/a\\
+define('WP_HOME',getenv('WORDPRESS_HOME_URL'));" ${CONFIG}
+
+
+    sed -i "s/'DB_NAME', *'database_name_here'/'DB_NAME', getenv('DATABASE_NAME')/" ${CONFIG}
+    sed -i "s/'DB_USER', *'username_here'/'DB_USER', getenv('DATABASE_USER')/" ${CONFIG}
+    sed -i "s/'DB_PASSWORD', *'password_here'/'DB_PASSWORD', getenv('DATABASE_PASSWORD')/" ${CONFIG}
+    sed -i "s/'DB_HOST', *'localhost'/'DB_HOST', getenv('DATABASE_SERVICE_NAME')/" ${CONFIG}
+    sed -i "s/\$table_prefix *= *'wp_';/\$table_prefix = getenv('DATABASE_TABLE_PREFIX');/" ${CONFIG}
+    sed -i "s/'WP_DEBUG', *false/'WP_DEBUG', getenv('WP_DEBUG')/" ${CONFIG}
+
+    sed -i "s/'AUTH_KEY', *'put your unique phrase here'/'AUTH_KEY', '`secret`'/" ${CONFIG}
+    sed -i "s/'SECURE_AUTH_KEY', *'put your unique phrase here'/'SECURE_AUTH_KEY', '`secret`'/" ${CONFIG}
+    sed -i "s/'LOGGED_IN_KEY', *'put your unique phrase here'/'LOGGED_IN_KEY', '`secret`'/" ${CONFIG}
+    sed -i "s/'NONCE_KEY', *'put your unique phrase here'/'NONCE_KEY', '`secret`'/" ${CONFIG}
+    sed -i "s/'AUTH_SALT', *'put your unique phrase here'/'AUTH_SALT', '`secret`'/" ${CONFIG}
+    sed -i "s/'SECURE_AUTH_SALT', *'put your unique phrase here'/'SECURE_AUTH_SALT', '`secret`'/" ${CONFIG}
+    sed -i "s/'LOGGED_IN_SALT', *'put your unique phrase here'/'LOGGED_IN_SALT', '`secret`'/" ${CONFIG}
+    sed -i "s/'NONCE_SALT', *'put your unique phrase here'/'NONCE_SALT', '`secret`'/" ${CONFIG}
+
+    echo "done"
+}
+
+secret() {
+    python -c 'import random; import string; print("".join([random.SystemRandom().choice(string.ascii_letters+string.digits) for i in range(50)]))'
+}
+
+function enable_webdav() {
+    if [ x"$1" != x"" ]; then
+        if [ -f /opt/app-root/secrets/webdav/.htdigest ]; then
+        echo -n "Enabling WEBDAV ... "
+
+            cat > /opt/app-root/etc/conf.d/90-webdav.conf << __EOF__
+<IfModule !dav_module>
+LoadModule dav_module modules/mod_dav.so'
+</IfModule>
+<IfModule !dav_fs_module>
+LoadModule dav_fs_module modules/mod_dav_fs.so'
+</IfModule>
+<IfModule !auth_digest_module>
+LoadModule auth_digest_module modules/mod_auth_digest.so'
+</IfModule>
+<IfModule !authn_file_module>
+LoadModule authn_file_module modules/mod_authn_file.so'
+</IfModule>
+<IfModule !authz_user_module>
+LoadModule authz_user_module modules/mod_authz_user.so'
+</IfModule>
+DavLockDB /opt/app-root/DavLock
+Alias /webdav/ /opt/app-root/src/wp-content/uploads
+<Location /webdav/>
+    DAV on
+    ForceType text/plain
+    DirectoryIndex disabled
+    AuthType Digest
+    AuthName "$WEBDAV_AUTHENTICATION_REALM"
+    AuthDigestDomain /webdav/
+    AuthDigestProvider file
+    AuthUserFile /opt/app-root/secrets/webdav/.htdigest
+    Require valid-user
+</Location>
+__EOF__
+
+        echo "done"
+        else
+            echo "WEBDAV is not enabled. File '/opt/app-root/secrets/webdav/.htdigest' does not exist!"
+        fi
+    else
+        echo "WEBDAV is not enabled. Please set 'WEBDAV_AUTHENTICATION_REALM' to environment"
+    fi
+}
+
+setup_directories
+get_version WORDPRESS_VERSION
+
+download_wordpress ${WORDPRESS_VERSION}
+download_wpcli
+
+install_wordpress
+install_languages
+install_plugins
+
+enable_webdav ${WEBDAV_AUTHENTICATION_REALM}
+
+
+clean_downloads
