@@ -14,6 +14,10 @@ parameters:
   description: 'Version der Site'
   value: 'latest'
   required: true
+- name: 'APPLICATION_URL'
+  displayName: 'Site URI'
+  description: 'URL of the site'
+  required: true
 - name: 'REPOSITORY'
   displayName: 'Git Repository'
   description: 'Git repository containing all site specific data'
@@ -237,8 +241,6 @@ objects:
           ports:
           - containerPort: 8080
             protocol: TCP
-          - containerPort: 8443
-            protocol: TCP
           readinessProbe:
             httpGet:
               scheme: HTTP
@@ -271,6 +273,12 @@ objects:
             - name: 'upload-data'
               mountPath: '/opt/app-root/src/wp-content/uploads'
           env:
+            - name: 'WORDPRESS_HOME_URL'
+              value: '${APPLICATION_URL}'
+            - name: 'WORDPRESS_SITE_URL'
+              value: '${APPLICATION_URL}'
+            - name: 'WP_DEBUG'
+              value: "${DEBUG_MODE}"
             - name: 'DATABASE_SERVICE_NAME'
               valueFrom:
                 secretKeyRef:
@@ -296,8 +304,6 @@ objects:
                 secretKeyRef:
                   name: "${APPLICATION_NAME}-db-config"
                   key: 'password'
-            - name: 'WP_DEBUG'
-              value: "${DEBUG_MODE}"
 - kind: PersistentVolumeClaim
   apiVersion: v1
   metadata:
@@ -324,10 +330,6 @@ objects:
       protocol: 'TCP'
       port: 8080
       targetPort: 8080
-    - name: '8443-tcp'
-      protocol: 'TCP'
-      port: 8443
-      targetPort: 8443
     selector:
       app: "${APPLICATION_NAME}"
       deploymentconfig: "${APPLICATION_NAME}-app"
@@ -339,7 +341,7 @@ objects:
       app: "${APPLICATION_NAME}"
       delete: "${APPLICATION_NAME}-app"
   spec:
-    host: ""
+    host: "${APPLICATION_URL}"
     to:
       kind: Service
       name: "${APPLICATION_NAME}"
