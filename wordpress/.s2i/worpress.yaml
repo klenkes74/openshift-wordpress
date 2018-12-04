@@ -246,6 +246,8 @@ objects:
           - name: 'upload-data'
             persistentVolumeClaim:
               claimName: "${APPLICATION_NAME}-upload-data"
+          - name: 'cache'
+            emptyDir: {}
         containers:
         - name: "wordpress"
           image: "${APPLICATION_NAME}-app:${APPLICATION_VERSION}"
@@ -290,11 +292,13 @@ objects:
           volumeMounts:
             - name: 'upload-data'
               mountPath: '/opt/app-root/src/wp-content/uploads'
+            - name: 'cache'
+              mountPath: '/opt/app-root/src/wp-content/cache'
           env:
             - name: 'WORDPRESS_HOME_URL'
-              value: '${APPLICATION_URL}'
+              value: 'https://${APPLICATION_URL}'
             - name: 'WORDPRESS_SITE_URL'
-              value: '${APPLICATION_URL}'
+              value: 'https://${APPLICATION_URL}'
             - name: 'WP_DEBUG'
               value: "${DEBUG_MODE}"
             - name: 'DATABASE_SERVICE_NAME'
