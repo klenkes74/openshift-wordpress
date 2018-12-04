@@ -39,7 +39,7 @@ function install_plugins {
         echo "done"
     done
 
-    echo "Installed plugins: $(ls)"
+    mv /tmp/src/plugins.cfg /tmp/src/plugins.base
 
     popd &> /dev/null
 }
@@ -66,6 +66,8 @@ function install_languages() {
 
         echo "done"
     done
+
+    mv /tmp/src/languages.cfg /tmp/src/languages.base
 
     popd &> /dev/null
 }
