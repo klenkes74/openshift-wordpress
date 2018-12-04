@@ -70,13 +70,17 @@ function copy_user_content() {
     # that, so outstanding question as to whether that will cause any issues.
 
     if [ -f /tmp/src/configs/wp-config.php ]; then
+        echo -ne "Copying provided wp-config.php ... "
         cp -f /tmp/src/configs/wp-config.php wp-config.php
         chmod 644 wp-config.php
+        echo "done"
     fi
 
     if [ -f /tmp/src/configs/.htaccess ]; then
+        echo -ne "Copying provided .htaccess ... "
         cp -f /tmp/src/configs/.htaccess .htaccess
-        chmod 604 .htaccess
+        chmod 644 .htaccess
+        echo "done"
     fi
 }
 
