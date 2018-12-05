@@ -60,7 +60,7 @@ function install_languages() {
         LOCALE="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f3)"
 
         echo -ne "Installing language '${NAME}' ... download '${LANGUAGE}' ... saving '${NAME}.mo' ... "
-        curl -Ls https://translate.wordpress.org/projects/wp/${LANGUAGE}/export-translations?format=mo > ${NAME}.mo
+        curl -Ls https://translate.wordpress.org/projects/${LANGUAGE}/export-translations?format=mo > ${NAME}.mo
 
 
         echo "done"
