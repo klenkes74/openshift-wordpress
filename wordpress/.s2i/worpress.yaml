@@ -127,7 +127,7 @@ parameters:
   required: true
 - name: 'WORDPRESS_VERSION'
   description: 'Tag of Wordpress to be installed'
-  value: '4.9.8'
+  value: '5.0'
   required: true
 - name: 'MYSQL_VERSION'
   description: 'Tag of the MySQL database version'
@@ -253,6 +253,8 @@ objects:
               claimName: "${APPLICATION_NAME}-upload-data"
           - name: 'cache'
             emptyDir: {}
+          - name: 'backups'
+            emptyDir: {}
         containers:
         - name: "wordpress"
           image: "${APPLICATION_NAME}-app:${APPLICATION_VERSION}"
@@ -276,6 +278,8 @@ objects:
               httpHeaders:
                 - name: 'X-Forwarded-Proto'
                   value: 'https'
+                - name: 'X-Probe-Type'
+                  value: 'readiness'
             failureThreshold: 3
             successThreshold: 1
             initialDelayTimeout: 5
@@ -289,6 +293,8 @@ objects:
             httpHeaders:
               - name: 'X-Forwarded-Proto'
                 value: 'https'
+              - name: 'X-Probe-Type'
+                value: 'liveness'
             failureThreshold: 3
             successThreshold: 1
             initialDelayTimeout: 5
@@ -299,6 +305,8 @@ objects:
               mountPath: '/opt/app-root/src/wp-content/uploads'
             - name: 'cache'
               mountPath: '/opt/app-root/src/wp-content/cache'
+            - name: 'backup'
+              mountPath: '/opt/app-root/src/wp-content/backups'
           env:
             - name: 'WORDPRESS_HOME_URL'
               value: 'https://${APPLICATION_URL}'
