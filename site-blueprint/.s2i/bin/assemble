@@ -105,6 +105,9 @@ function install_authors_notepad_theme() {
     tar xzf authors-notepad.tar.gz
     rm -f authors-notepad.tar.gz
 
+    echo -ne "Copy bug library theme config ... "
+    cp ../plugins/bug-library/single-bug-library-bugs.php authors-notepad
+
     echo "done"
     popd &> /dev/null
 }
