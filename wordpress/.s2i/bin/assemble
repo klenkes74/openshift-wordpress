@@ -200,14 +200,6 @@ define('WP_HOME',getenv('WORDPRESS_HOME_URL'));" ${CONFIG}
     echo "done"
 }
 
-function fix_dsvgo() {
-    echo -n "Fixing plugin DSVGO-all-in-one-wp ... "
-
-    sed -i "s/\$cookietextscroll/false/" ./wp-content/plugins/dsgvo-all-in-one-for-wp/dsgvo_all_in_one_wp.php
-
-    echo "done"
-}
-
 secret() {
     python -c 'import random; import string; print("".join([random.SystemRandom().choice(string.ascii_letters+string.digits) for i in range(50)]))'
 }
@@ -266,7 +258,6 @@ download_wpcli
 install_wordpress
 install_languages
 install_plugins
-fix_dsvgo
 
 enable_webdav ${WEBDAV_AUTHENTICATION_REALM}
 
