@@ -129,18 +129,38 @@ function clean_downloads() {
     fi
 }
 
+function get_cli_version() {
+  local  __resultvar=$1
+  local myresult=''
+
+  if [ -z ${!__resultvar+x} ] ; then
+      echo -ne "Set default version ... "
+      myresult=2.1.0
+      echo "${myresult} ... done"
+  else
+      myresult=${!__resultvar}
+      echo "Fixed version: ${myresult}"
+  fi
+
+  if [[ "$__resultvar" ]]; then
+      eval $__resultvar="'$myresult'"
+  else
+      echo "$myresult"
+  fi
+}
 function download_wpcli() {
-    echo -ne "Downloading Wordpress CLI ... "
+    VERSION=$1
+    echo -ne "Downloading Wordpress CLI ${VERSION} ... "
     curl -Ls https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar > /opt/app-root/bin/wp
     echo "done"
 
     chmod +x /opt/app-root/bin/wp
 
     echo -ne "Check wp-cli ... "
-    if [ "WP-CLI 2.0.1" == "$(/opt/app-root/bin/wp --version)" ] ; then
+    if [ "WP-CLI ${VERSION}" == "$(/opt/app-root/bin/wp --version)" ] ; then
         echo "ok"
     else
-        echo "FAILED (wanted WP-CLI 2.0.1, got $(/opt/app-root/bin/wp --version))"
+        echo "FAILED (wanted WP-CLI ${VERSION}, got $(/opt/app-root/bin/wp --version))"
         exit 1
     fi
 }
@@ -250,10 +270,12 @@ __EOF__
 }
 
 setup_directories
-get_version WORDPRESS_VERSION
 
+get_version WORDPRESS_VERSION
 download_wordpress ${WORDPRESS_VERSION}
-download_wpcli
+
+get_cli_version WP_CLI_VERSION
+download_wpcli ${WP_CLI_VERSION}
 
 install_wordpress
 install_languages
@@ -262,4 +284,4 @@ install_plugins
 enable_webdav ${WEBDAV_AUTHENTICATION_REALM}
 
 
-clean_downloads
+clean_downloads                               
