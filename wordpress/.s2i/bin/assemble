@@ -140,7 +140,7 @@ function download_wpcli() {
     if [ "WP-CLI 2.0.1" == "$(/opt/app-root/bin/wp --version)" ] ; then
         echo "ok"
     else
-        echo "FAILED"
+        echo "FAILED (wanted WP-CLI 2.0.1, got $(/opt/app-root/bin/wp --version))"
         exit 1
     fi
 }
