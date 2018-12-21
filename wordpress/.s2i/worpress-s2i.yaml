@@ -26,7 +26,10 @@ metadata:
 parameters:
 - name: 'WORDPRESS_VERSION'
   displayName: 'Wordpress Version'
-  value: '4.9.8'
+  required: false
+- name: 'WP_CLI_VERSION'
+  displayName: 'Wordpress CLI Version'
+  value: '2.1.0'
   required: true
 - name: 'PHP_BASE_IMAGE_VERSION'
   displayName: 'PHP Version to use'
@@ -106,6 +109,8 @@ objects:
         env:
         - name: 'WORDPRESS_VERSION'
           value: '${WORDPRESS_VERSION}'
+        - name: 'WP_CLI_VERSION'
+          value: '${WP_CLI_VERSION}'
         from:
           kind: ImageStreamTag
           name: 'php72:${PHP_BASE_IMAGE_VERSION}'
