@@ -55,8 +55,8 @@ function install_themes {
     cd ./wp-content/themes
 
     for THEME in `cat /tmp/src/themes.cfg` ; do
-        echo -ne "Install THEME '${THEME}' ... downloading ... "
-        curl -Ls https://downloads.wordpress.org/THEME/${THEME}.zip > ${THEME}.zip
+        echo -ne "Install theme '${THEME}' ... downloading ... "
+        curl -Ls https://downloads.wordpress.org/theme/${THEME}.zip > ${THEME}.zip
 
         echo -ne "unpacking ... "
         unzip -qq ${THEME}.zip
