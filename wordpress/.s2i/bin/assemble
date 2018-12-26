@@ -50,6 +50,36 @@ function install_plugins {
     popd &> /dev/null
 }
 
+
+function install_themes {
+    if [ ! -f /tmp/src/themes.cfg ] ; then
+        echo "No themes to install."
+
+        return
+    fi
+    pushd . &> /dev/null
+
+    create_directory ./wp-content/themes
+    cd ./wp-content/themes
+
+    for THEME in `cat /tmp/src/themes.cfg` ; do
+        echo -ne "Install theme '${THEME}' ... downloading ... "
+        curl -Ls https://downloads.wordpress.org/theme/${THEME}.zip > ${THEME}.zip
+
+        echo -ne "unpacking ... "
+        unzip -qq ${THEME}.zip
+
+        echo -ne "deleting ZIP-file ... "
+        rm -f ${THEME}.zip
+
+        echo "done"
+    done
+
+    mv /tmp/src/themes.cfg /tmp/src/themes.base
+
+    popd &> /dev/null
+}
+
 function install_languages() {
     if [ ! -f /tmp/src/languages.cfg ] ; then
         echo "No languages to install."
@@ -257,6 +287,7 @@ download_wpcli
 
 install_wordpress
 install_languages
+install_themes
 install_plugins
 
 enable_webdav ${WEBDAV_AUTHENTICATION_REALM}

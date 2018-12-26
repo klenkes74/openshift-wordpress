@@ -42,6 +42,37 @@ function install_plugins {
     popd &> /dev/null
 }
 
+
+function install_themes {
+    if [ ! -f /tmp/src/themes.cfg ] ; then
+        echo "No themes to install."
+
+        return
+    fi
+    pushd . &> /dev/null
+
+    create_directory ./wp-content/themes
+    cd ./wp-content/themes
+
+    for THEME in `cat /tmp/src/themes.cfg` ; do
+        echo -ne "Install THEME '${THEME}' ... downloading ... "
+        curl -Ls https://downloads.wordpress.org/THEME/${THEME}.zip > ${THEME}.zip
+
+        echo -ne "unpacking ... "
+        unzip -qq ${THEME}.zip
+
+        echo -ne "deleting ZIP-file ... "
+        rm -f ${THEME}.zip
+
+        echo -ne "Copy bug library theme config ... "
+        cp ../plugins/bug-library/single-bug-library-bugs.php ${THEME}
+
+        echo "done"
+    done
+
+    popd &> /dev/null
+}
+
 function install_languages() {
     if [ ! -f /tmp/src/languages.cfg ] ; then
         echo "No languages to install."
@@ -60,7 +91,7 @@ function install_languages() {
         LOCALE="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f3)"
 
         echo -ne "Installing language '${NAME}' ... download '${LANGUAGE}' ... saving '${NAME}.mo' ... "
-        curl -Ls https://translate.wordpress.org/projects/wp/${LANGUAGE}/export-translations?format=mo > ${NAME}.mo
+        curl -Ls https://translate.wordpress.org/projects/${LANGUAGE}/export-translations?format=mo > ${NAME}.mo
 
 
         echo "done"
@@ -91,27 +122,9 @@ function copy_user_content() {
     fi
 }
 
-function install_authors_notepad_theme() {
-    pushd . &> /dev/null
-
-    echo -ne "Installing author's notepad theme ... "
-
-    create_directory ./wp-content/themes/
-    cd ./wp-content/themes/
-
-    echo -ne "downloading theme ... "
-    curl -Ls https://www.lichti.de/authors-notepad.tar.gz > authors-notepad.tar.gz
-    echo -ne "extracting ... "
-    tar xzf authors-notepad.tar.gz
-    rm -f authors-notepad.tar.gz
-
-    echo "done"
-    popd &> /dev/null
-}
-
 
 install_languages
 install_plugins
-install_authors_notepad_theme
+install_themes
 
 copy_user_content
