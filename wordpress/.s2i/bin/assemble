@@ -165,7 +165,7 @@ function get_cli_version() {
 
   if [ -z ${!__resultvar+x} ] ; then
       echo -ne "Set default version ... "
-      myresult=2.1.0
+      myresult=latest
       echo "${myresult} ... done"
   else
       myresult=${!__resultvar}
@@ -187,11 +187,15 @@ function download_wpcli() {
     chmod +x /opt/app-root/bin/wp
 
     echo -ne "Check wp-cli ... "
-    if [ "WP-CLI ${VERSION}" == "$(/opt/app-root/bin/wp --version)" ] ; then
-        echo "ok"
+    if [ "${VERSION:latest}" != "latest" ] ; then
+        if [ "WP-CLI ${VERSION}" == "$(/opt/app-root/bin/wp --version)" ] ; then
+            echo "ok"
+        else
+            echo "FAILED (wanted WP-CLI ${VERSION}, got $(/opt/app-root/bin/wp --version))"
+            exit 1
+        fi
     else
-        echo "FAILED (wanted WP-CLI ${VERSION}, got $(/opt/app-root/bin/wp --version))"
-        exit 1
+        echo "$(/opt/app-root/bin/wp --version)"
     fi
 }
 
