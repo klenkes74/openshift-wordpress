@@ -29,7 +29,8 @@ parameters:
   required: false
 - name: 'WP_CLI_VERSION'
   displayName: 'Wordpress CLI Version'
-  required: false
+  value: 'latest'
+  required: true
 - name: 'PHP_BASE_IMAGE_VERSION'
   displayName: 'PHP Version to use'
   value: 'latest'

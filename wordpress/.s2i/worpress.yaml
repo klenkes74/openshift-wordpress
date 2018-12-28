@@ -113,7 +113,7 @@ parameters:
   displayName: 'Prefix'
   description: 'Prefix for all database tables generated'
   generate: 'expression'
-  from: 'wp[a-f0-9]{3}_'
+  from: 'wp_[a-f0-9]{3}_'
   requried: true
 - name: 'DATABASE_USER'
   displayName: 'Database user'
@@ -125,9 +125,14 @@ parameters:
   generate: 'expression'
   from: '[a-zA-Z0-9]{32}'
   required: true
+- name: 'DATABASE_ROOT_PASSWORD'
+  displayName: 'Database root password'
+  generate: 'expression'
+  from: '[a-zA-Z0-9]{32}'
+  required: true
 - name: 'WORDPRESS_VERSION'
   description: 'Tag of Wordpress to be installed'
-  value: '5.0'
+  value: '5.0.2'
   required: true
 - name: 'MYSQL_VERSION'
   description: 'Tag of the MySQL database version'
@@ -208,14 +213,25 @@ objects:
       template.openshift.io/expose-database_prefix: "{.data['prefix']}"
       template.openshift.io/expose-database_user: "{.data['user']}"
       template.openshift.io/expose-database_password: "{.data['password']}"
-      template.openshift.io/expose-database_root_password: "{.data['rootpassword']}"
   stringData:
     service: "${APPLICATION_NAME}-db"
     database: "${DATABASE_NAME}"
     prefix: "${DATABASE_TABLE_PREFIX}"
     user: "${DATABASE_USER}"
     password: "${DATABASE_PASSWORD}"
-    rootpassword: "${DATABASE_PASSWORD}"
+- kind: Secret
+  apiVersion: v1
+  metadata:
+    name: "${APPLICATION_NAME}-db-admin-config"
+    labels:
+      app: "${APPLICATION_NAME}"
+      delete: "${APPLICATION_NAME}-db"
+    annotations:
+      template.openshift.io/expose-database_service: "{.data['service']}"
+      template.openshift.io/expose-database_root_password: "{.data['rootpassword']}"
+  stringData:
+    service: "${APPLICATION_NAME}-db"
+    rootpassword: "${DATABASE_ROOT_PASSWORD}"
 - kind: DeploymentConfig
   apiVersion: apps.openshift.io/v1
   metadata:
@@ -305,7 +321,7 @@ objects:
               mountPath: '/opt/app-root/src/wp-content/uploads'
             - name: 'cache'
               mountPath: '/opt/app-root/src/wp-content/cache'
-            - name: 'backup'
+            - name: 'backups'
               mountPath: '/opt/app-root/src/wp-content/backups'
           env:
             - name: 'WORDPRESS_HOME_URL'
