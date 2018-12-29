@@ -221,7 +221,7 @@ function install_wordpress() {
     mv wp-config-sample.php ${CONFIG}
 
     sed -i "/'DB_COLLATE', '');/a\\
-define('WPLANG',(getenv('WPLANG') ?: 'de_DE')" ${CONFIG}
+define('WPLANG',(getenv('WPLANG') ?: 'de_DE'));" ${CONFIG}
 
     sed -i "/'DB_COLLATE', '');/a\\
 define('FS_METHOD', 'direct');" ${CONFIG}
