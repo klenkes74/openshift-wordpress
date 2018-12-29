@@ -64,9 +64,6 @@ function install_themes {
         echo -ne "deleting ZIP-file ... "
         rm -f ${THEME}.zip
 
-        echo -ne "Copy bug library theme config ... "
-        cp ../plugins/bug-library/single-bug-library-bugs.php ${THEME}
-
         echo "done"
     done
 
