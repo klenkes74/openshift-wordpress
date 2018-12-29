@@ -364,7 +364,7 @@ objects:
       delete: "${APPLICATION_NAME}-app"
   spec:
     accessModes:
-      - ReadWriteOnce
+      - ReadWriteMany
     resources:
       requests:
         storage: "${UPLOAD_SPACE_SIZE}"
@@ -388,6 +388,10 @@ objects:
     selector:
       app: "${APPLICATION_NAME}"
       deploymentconfig: "${APPLICATION_NAME}-app"
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 3600
 - kind: Route
   apiVersion: v1
   metadata:
@@ -395,6 +399,8 @@ objects:
     labels:
       app: "${APPLICATION_NAME}"
       delete: "${APPLICATION_NAME}-app"
+    annotations:
+      console.alpha.openshift.io/overview-app-route: 'true'
   spec:
     host: "${APPLICATION_URL}"
     to:

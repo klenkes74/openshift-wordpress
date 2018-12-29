@@ -210,9 +210,18 @@ function install_wordpress() {
     rm -rf wp-content/plugins/akismet
     echo "done"
 
+    echo -n "Removing unwanted themes ... 2016"
+    rm -rf wp-content/themes/twentysixteen
+    echo -n " 2017 ... "
+    rm -rf wp-content/themes/twentyseventeen
+    echo "done"
+
     echo -n "Configuring wordpress ... "
     CONFIG=wp-config.php
     mv wp-config-sample.php ${CONFIG}
+
+    sed -i "/'DB_COLLATE', '');/a\\
+define('WPLANG',(getenv('WPLANG') ?: 'de_DE')" ${CONFIG}
 
     sed -i "/'DB_COLLATE', '');/a\\
 define('FS_METHOD', 'direct');" ${CONFIG}
