@@ -35,9 +35,11 @@ wp/4.9.x/de/default:de-default:de_DE
 wp/4.9.x/de/formal:de-formal:de_DE@formal
 ```
 
+The default language of the 
+
 ### Adding Themes
-Themes need to be added in the site-speficic repository. The script site-bueprint/.s2i/bin/assemble contains the shell
-commands to retrieve the theme and install it. It can be adapted to the needed theme.
+Adding the base name of the theme to the file themes.cfg will install the theme. The file contains one theme name per
+line. The base name is the name in the theme directory of wordpress without the extension ".zip".
 
 
 ## Combining Wordpress and OpenShift
@@ -70,7 +72,7 @@ being used on this site.
 Now, all containers are ready. But when you call the site, you will need to run the installer. The database is not 
 initialized. But after running the default installation routine once you have the database.
 
-### Updating plugins
+### Updating plugins or themes
 Depending where the plugins got added, you need to update either the wordpress S2I builder image or the site image.
 
 ### Updating wordpress

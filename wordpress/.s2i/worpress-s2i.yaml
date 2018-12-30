@@ -35,6 +35,11 @@ parameters:
   displayName: 'PHP Version to use'
   value: 'latest'
   required: true
+- name: 'IMAGE_TARGET_TAG'
+  displayName: 'Target tag of the image built'
+  description: 'The tag for the image that is produced.'
+  value: 'latest'
+  required: true
 - name: 'REPOSITORY'
   displayName: 'Git Repository'
   description: 'Git repository containing all site specific data'
@@ -82,7 +87,7 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: 'wordpress-s2i:${WORDPRESS_VERSION}'
+        name: 'wordpress-s2i:${IMAGE_TARGET_TAG}'
       imageLabels:
       - name: 'io.k8s.display-name'
         value: 'WordPress S2I Builder'
