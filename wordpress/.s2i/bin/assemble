@@ -269,10 +269,16 @@ install_data_dir() {
     pushd . >/dev/null
     cd ./wp-content/
 
-    echo -n "Removing old directories ... uploads ... "
-    rmdir uploads
-    echo -n "languages ... "
-    rm -rf languages
+    echo -n "Removing old directories ... "
+    if [ -d uploads ] ; then
+        echo -n "uploads ... "
+        rm -rf uploads
+    fi
+
+    if [ -d languages ] ; then
+        echo -n "languages ... "
+        rm -rf languages
+    fi
 
     echo -n "Linking ... uploads ... "
     ln -s /opt/app-root/data/uploads uploads/
