@@ -42,6 +42,34 @@ function install_plugins {
     popd &> /dev/null
 }
 
+
+function install_themes {
+    if [ ! -f /tmp/src/themes.cfg ] ; then
+        echo "No themes to install."
+
+        return
+    fi
+    pushd . &> /dev/null
+
+    create_directory ./wp-content/themes
+    cd ./wp-content/themes
+
+    for THEME in `cat /tmp/src/themes.cfg` ; do
+        echo -ne "Install theme '${THEME}' ... downloading ... "
+        curl -Ls https://downloads.wordpress.org/theme/${THEME}.zip > ${THEME}.zip
+
+        echo -ne "unpacking ... "
+        unzip -qq ${THEME}.zip
+
+        echo -ne "deleting ZIP-file ... "
+        rm -f ${THEME}.zip
+
+        echo "done"
+    done
+
+    popd &> /dev/null
+}
+
 function install_languages() {
     if [ ! -f /tmp/src/languages.cfg ] ; then
         echo "No languages to install."
@@ -89,32 +117,20 @@ function copy_user_content() {
         chmod 644 .htaccess
         echo "done"
     fi
-}
 
-function install_authors_notepad_theme() {
-    pushd . &> /dev/null
+    echo -n "Preparing languages directory ... "
+    if [ -d ./wp-content/languages ] ; then
 
-    echo -ne "Installing author's notepad theme ... "
 
-    create_directory ./wp-content/themes/
-    cd ./wp-content/themes/
-
-    echo -ne "downloading theme ... "
-    curl -Ls https://www.lichti.de/authors-notepad.tar.gz > authors-notepad.tar.gz
-    echo -ne "extracting ... "
-    tar xzf authors-notepad.tar.gz
-    rm -f authors-notepad.tar.gz
-
-    echo -ne "Copy bug library theme config ... "
-    cp ../plugins/bug-library/single-bug-library-bugs.php authors-notepad
-
-    echo "done"
-    popd &> /dev/null
+        echo "done"
+    else
+        echo "skipped"
+    fi
 }
 
 
 install_languages
 install_plugins
-install_authors_notepad_theme
+install_themes
 
 copy_user_content

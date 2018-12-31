@@ -50,6 +50,36 @@ function install_plugins {
     popd &> /dev/null
 }
 
+
+function install_themes {
+    if [ ! -f /tmp/src/themes.cfg ] ; then
+        echo "No themes to install."
+
+        return
+    fi
+    pushd . &> /dev/null
+
+    create_directory ./wp-content/themes
+    cd ./wp-content/themes
+
+    for THEME in `cat /tmp/src/themes.cfg` ; do
+        echo -ne "Install theme '${THEME}' ... downloading ... "
+        curl -Ls https://downloads.wordpress.org/theme/${THEME}.zip > ${THEME}.zip
+
+        echo -ne "unpacking ... "
+        unzip -qq ${THEME}.zip
+
+        echo -ne "deleting ZIP-file ... "
+        rm -f ${THEME}.zip
+
+        echo "done"
+    done
+
+    mv /tmp/src/themes.cfg /tmp/src/themes.base
+
+    popd &> /dev/null
+}
+
 function install_languages() {
     if [ ! -f /tmp/src/languages.cfg ] ; then
         echo "No languages to install."
@@ -135,7 +165,7 @@ function get_cli_version() {
 
   if [ -z ${!__resultvar+x} ] ; then
       echo -ne "Set default version ... "
-      myresult=2.1.0
+      myresult=latest
       echo "${myresult} ... done"
   else
       myresult=${!__resultvar}
@@ -157,11 +187,15 @@ function download_wpcli() {
     chmod +x /opt/app-root/bin/wp
 
     echo -ne "Check wp-cli ... "
-    if [ "WP-CLI ${VERSION}" == "$(/opt/app-root/bin/wp --version)" ] ; then
-        echo "ok"
+    if [ "${VERSION:latest}" != "latest" ] ; then
+        if [ "WP-CLI ${VERSION}" == "$(/opt/app-root/bin/wp --version)" ] ; then
+            echo "ok"
+        else
+            echo "FAILED (wanted WP-CLI ${VERSION}, got $(/opt/app-root/bin/wp --version))"
+            exit 1
+        fi
     else
-        echo "FAILED (wanted WP-CLI ${VERSION}, got $(/opt/app-root/bin/wp --version))"
-        exit 1
+        echo "$(/opt/app-root/bin/wp --version)"
     fi
 }
 
@@ -176,9 +210,18 @@ function install_wordpress() {
     rm -rf wp-content/plugins/akismet
     echo "done"
 
+    echo -n "Removing unwanted themes ... 2016 ... "
+    rm -rf wp-content/themes/twentysixteen
+    echo -n " 2017 ... "
+    rm -rf wp-content/themes/twentyseventeen
+    echo "done"
+
     echo -n "Configuring wordpress ... "
     CONFIG=wp-config.php
     mv wp-config-sample.php ${CONFIG}
+
+    sed -i "/'DB_COLLATE', '');/a\\
+define('WPLANG',(getenv('WPLANG') ?: 'de_DE'));" ${CONFIG}
 
     sed -i "/'DB_COLLATE', '');/a\\
 define('FS_METHOD', 'direct');" ${CONFIG}
@@ -279,6 +322,7 @@ download_wpcli ${WP_CLI_VERSION}
 
 install_wordpress
 install_languages
+install_themes
 install_plugins
 
 enable_webdav ${WEBDAV_AUTHENTICATION_REALM}

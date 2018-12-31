@@ -1,7 +1,7 @@
 # Copyright (C) 2018  Kaiserpfalz-EDV Service, Roland T. Lichti
-# This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+# This program comes with ABSOLUTELY NO WARRANTY.
 # This is free software, and you are welcome to redistribute it
-# under certain conditions; type `show c' for details.
+# under certain conditions.
 
 apiVersion: v1
 kind: Template
@@ -33,8 +33,8 @@ parameters:
   value: 'latest'
   required: true
 - name: 'APPLICATION_URL'
-  displayName: 'Site URI'
-  description: 'URL of the site'
+  displayName: 'Site URI hostname'
+  description: 'Hostname part of the URI of the site'
   required: true
 - name: 'REPOSITORY'
   displayName: 'Git Repository'
@@ -53,8 +53,12 @@ parameters:
 - name: 'UPLOAD_SPACE_SIZE'
   displayName: 'Upload Space Size'
   description: 'Size of the data store for user uploads (<HOME>/wp-content/uploads).'
-  value: '2Gi'
+  value: '5Gi'
   required: true
+- name: 'DEFAULT_LANGUAGE'
+  display: 'Default language'
+  value: 'de_DE'
+  requrired: true
 - name: 'DEBUG_MODE'
   display: 'Activate DEBUG'
   description: 'Activate the debugging of WordPress'
@@ -63,46 +67,57 @@ parameters:
 - name: 'WEBSERVER_MEMORY_LIMIT'
   displayName: 'Maximum used memory (Webserver)'
   description: 'Maximum memory usage of this pod.'
-  value: "512Mi"
+  value: "1280Mi"
   required: true
 - name: 'WEBSERVER_MEMORY_REQUESTS'
   displayName: 'Minimum required memory (Webserver)'
   description: 'The minimum required memory for this site.'
-  value: "128Mi"
+  value: "640Mi"
   required: true
 - name: 'WEBSERVER_CPU_LIMIT'
   displayName: 'Maximum used CPU (Webserver)'
   description: 'Maximum CPU usage of this pod.'
-  value: '1'
+  value: '2'
   required: true
 - name: 'WEBSERVER_CPU_REQUESTS'
   displayName: 'Mimimum required CPU (Webserver)'
   description: 'The minumum required CPU for this site.'
-  value: '50m'
+  value: '30m'
+  required: true
+- name: 'WEBSERVER_UPDATE_STRATEGY'
+  displayName: 'Update strategy (Webserver)'
+  description: |
+    If you have RWX-capable storage for the webserver upload then you can use "rolling", otherwise you need to use
+    "recreate"
+  value: 'recreate'
+  required: true
+- name: 'WEBSERVER_STORAGE_TYPE'
+  displayName: 'Storage capability (RWO, RWX)'
+  value: 'ReadWriteOnce'
   required: true
 - name: 'DATABASE_SIZE'
   displayName: 'Maximum size of database'
-  value: '1Gi'
+  value: '2Gi'
   required: true
 - name: 'DATABASE_MEMORY_LIMIT'
   displayName: 'Maximum used memory (Database)'
   description: 'Maximum memory usage of this pod.'
-  value: "512Mi"
+  value: "1536Mi"
   required: true
 - name: 'DATABASE_MEMORY_REQUESTS'
   displayName: 'Minimum required memory (Database)'
   description: 'The minimum required memory for this site.'
-  value: "128Mi"
+  value: "1280Mi"
   required: true
 - name: 'DATABASE_CPU_LIMIT'
   displayName: 'Maximum used CPU (Database)'
   description: 'Maximum CPU usage of this pod.'
-  value: '1'
+  value: '500m'
   required: true
 - name: 'DATABASE_CPU_REQUESTS'
   displayName: 'Mimimum required CPU (Database)'
   description: 'The minumum required CPU for this site.'
-  value: '50m'
+  value: '15m'
   required: true
 - name: 'DATABASE_NAME'
   displayName: 'Database name'
@@ -113,7 +128,7 @@ parameters:
   displayName: 'Prefix'
   description: 'Prefix for all database tables generated'
   generate: 'expression'
-  from: 'wp[a-f0-9]{3}_'
+  from: 'wp_[a-f0-9]{3}_'
   requried: true
 - name: 'DATABASE_USER'
   displayName: 'Database user'
@@ -125,9 +140,14 @@ parameters:
   generate: 'expression'
   from: '[a-zA-Z0-9]{32}'
   required: true
+- name: 'DATABASE_ROOT_PASSWORD'
+  displayName: 'Database root password'
+  generate: 'expression'
+  from: '[a-zA-Z0-9]{32}'
+  required: true
 - name: 'WORDPRESS_VERSION'
   description: 'Tag of Wordpress to be installed'
-  value: '5.0'
+  value: 'latest'
   required: true
 - name: 'MYSQL_VERSION'
   description: 'Tag of the MySQL database version'
@@ -208,14 +228,25 @@ objects:
       template.openshift.io/expose-database_prefix: "{.data['prefix']}"
       template.openshift.io/expose-database_user: "{.data['user']}"
       template.openshift.io/expose-database_password: "{.data['password']}"
-      template.openshift.io/expose-database_root_password: "{.data['rootpassword']}"
   stringData:
     service: "${APPLICATION_NAME}-db"
     database: "${DATABASE_NAME}"
     prefix: "${DATABASE_TABLE_PREFIX}"
     user: "${DATABASE_USER}"
     password: "${DATABASE_PASSWORD}"
-    rootpassword: "${DATABASE_PASSWORD}"
+- kind: Secret
+  apiVersion: v1
+  metadata:
+    name: "${APPLICATION_NAME}-db-admin-config"
+    labels:
+      app: "${APPLICATION_NAME}"
+      delete: "${APPLICATION_NAME}-db"
+    annotations:
+      template.openshift.io/expose-database_service: "{.data['service']}"
+      template.openshift.io/expose-database_root_password: "{.data['rootpassword']}"
+  stringData:
+    service: "${APPLICATION_NAME}-db"
+    rootpassword: "${DATABASE_ROOT_PASSWORD}"
 - kind: DeploymentConfig
   apiVersion: apps.openshift.io/v1
   metadata:
@@ -230,7 +261,7 @@ objects:
       app: "${APPLICATION_NAME}"
       deploymentConfig: "${APPLICATION_NAME}-app"
     strategy:
-      type: Recreate
+      type: "${WEBSERVER_UPDATE_STRATEGY}"
     triggers:
       - type: ConfigChange
       - type: ImageChange
@@ -305,7 +336,7 @@ objects:
               mountPath: '/opt/app-root/src/wp-content/uploads'
             - name: 'cache'
               mountPath: '/opt/app-root/src/wp-content/cache'
-            - name: 'backup'
+            - name: 'backups'
               mountPath: '/opt/app-root/src/wp-content/backups'
           env:
             - name: 'WORDPRESS_HOME_URL'
@@ -314,6 +345,8 @@ objects:
               value: 'https://${APPLICATION_URL}'
             - name: 'WP_DEBUG'
               value: "${DEBUG_MODE}"
+            - name: 'WPLANG'
+              value: '${DEFAULT_LANGUAGE}'
             - name: 'DATABASE_SERVICE_NAME'
               valueFrom:
                 secretKeyRef:
@@ -348,7 +381,7 @@ objects:
       delete: "${APPLICATION_NAME}-app"
   spec:
     accessModes:
-      - ReadWriteOnce
+      - "${WEBSERVER_STORAGE_TYPE}"
     resources:
       requests:
         storage: "${UPLOAD_SPACE_SIZE}"
@@ -372,6 +405,10 @@ objects:
     selector:
       app: "${APPLICATION_NAME}"
       deploymentconfig: "${APPLICATION_NAME}-app"
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 3600
 - kind: Route
   apiVersion: v1
   metadata:
@@ -379,6 +416,8 @@ objects:
     labels:
       app: "${APPLICATION_NAME}"
       delete: "${APPLICATION_NAME}-app"
+    annotations:
+      console.alpha.openshift.io/overview-app-route: 'true'
   spec:
     host: "${APPLICATION_URL}"
     to:
