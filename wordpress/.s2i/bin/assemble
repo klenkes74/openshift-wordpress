@@ -290,6 +290,10 @@ install_data_dir() {
 
     echo "done"
     popd >/dev/null
+
+    echo -n "Adding php pre scripts ... "
+    cp -a /tmp/src/php-pre-start /opt/app-root/src
+    echo "done"
 }
 
 secret() {
