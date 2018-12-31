@@ -293,8 +293,8 @@ install_data_dir() {
 
     if [ -d /tmp/src/php-pre-start ] ; then
         echo -n "Adding php pre scripts ... "
-        create_directory ${PHP_CONTAINER_SCRIPTS_PATH}
-        cp -a /tmp/src/php-pre-start/* ${PHP_CONTAINER_SCRIPTS_PATH}
+        create_directory ${APP_DATA}/php-pre-start
+        cp -a /tmp/src/php-pre-start/* ${APP_DATA}/php-pre-start
         echo "done"
     fi
 }
