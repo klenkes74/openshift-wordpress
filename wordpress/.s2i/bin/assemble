@@ -8,6 +8,8 @@
 
 function setup_directories() {
     mkdir -p /opt/app-root/downloads
+    mkdir -p /opt/app-root/data/languages
+    mkdir -p /opt/app-root/data/uploads
     mkdir -p /opt/app-root/bin
     PATH="${PATH}:/opt/app-root/bin"
 }
@@ -263,6 +265,25 @@ define('WP_HOME',getenv('WORDPRESS_HOME_URL'));" ${CONFIG}
     echo "done"
 }
 
+install_data_dir() {
+    pushd . >/dev/null
+    cd ./wp-content/
+
+    echo -n "Removing old directories ... uploads ... "
+    rmdir uploads
+    echo -n "languages ... "
+    rm -rf languages
+
+    echo -n "Linking ... uploads ... "
+    ln -s /opt/app-root/data/uploads uploads/
+
+    echo -n "languages ... "
+    ln -s /opt/app-root/data/languages languages/
+
+    echo "done"
+    popd >/dev/null
+}
+
 secret() {
     python -c 'import random; import string; print("".join([random.SystemRandom().choice(string.ascii_letters+string.digits) for i in range(50)]))'
 }
@@ -321,6 +342,7 @@ get_cli_version WP_CLI_VERSION
 download_wpcli ${WP_CLI_VERSION}
 
 install_wordpress
+install_data_dir
 install_languages
 install_themes
 install_plugins

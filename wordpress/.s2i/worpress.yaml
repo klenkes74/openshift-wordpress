@@ -279,7 +279,7 @@ objects:
           deploymentConfig: "${APPLICATION_NAME}-app"
       spec:
         volumes:
-          - name: 'upload-data'
+          - name: 'data'
             persistentVolumeClaim:
               claimName: "${APPLICATION_NAME}-upload-data"
           - name: 'cache'
@@ -332,8 +332,8 @@ objects:
             timeoutSeconds: 1
             periodSeconds: 5
           volumeMounts:
-            - name: 'upload-data'
-              mountPath: '/opt/app-root/src/wp-content/uploads'
+            - name: 'data'
+              mountPath: '/opt/app-root/data'
             - name: 'cache'
               mountPath: '/opt/app-root/src/wp-content/cache'
             - name: 'backups'
