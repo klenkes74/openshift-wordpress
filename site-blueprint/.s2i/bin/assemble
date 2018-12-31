@@ -90,7 +90,6 @@ function install_languages() {
         echo -ne "Installing language '${NAME}' ... download '${LANGUAGE}' ... saving '${NAME}.mo' ... "
         curl -Ls https://translate.wordpress.org/projects/${LANGUAGE}/export-translations?format=mo > ${NAME}.mo
 
-
         echo "done"
     done
 
@@ -116,15 +115,6 @@ function copy_user_content() {
         cp -f /tmp/src/configs/.htaccess .htaccess
         chmod 644 .htaccess
         echo "done"
-    fi
-
-    echo -n "Preparing languages directory ... "
-    if [ -d ./wp-content/languages ] ; then
-
-
-        echo "done"
-    else
-        echo "skipped"
     fi
 }
 
