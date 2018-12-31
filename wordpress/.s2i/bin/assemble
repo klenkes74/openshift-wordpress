@@ -279,12 +279,14 @@ install_data_dir() {
         echo -n "languages ... "
         rm -rf languages
     fi
+    echo "done"
+
 
     echo -n "Linking ... uploads ... "
-    ln -s /opt/app-root/data/uploads uploads/
+    ln -s /opt/app-root/data/uploads uploads
 
     echo -n "languages ... "
-    ln -s /opt/app-root/data/languages languages/
+    ln -s /opt/app-root/data/languages languages
 
     echo "done"
     popd >/dev/null
