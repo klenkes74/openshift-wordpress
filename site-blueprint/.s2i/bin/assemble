@@ -116,6 +116,13 @@ function copy_user_content() {
         chmod 644 .htaccess
         echo "done"
     fi
+
+
+    if [ -d /tmp/src/php-pre-start ] ; then
+        echo -n "Adding php pre scripts ... "
+        cp -a /tmp/src/php-pre-start/* ${APP_DATA}/php-pre-start
+        echo "done"
+    fi
 }
 
 

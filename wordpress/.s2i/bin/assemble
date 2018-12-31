@@ -291,9 +291,11 @@ install_data_dir() {
     echo "done"
     popd >/dev/null
 
-    echo -n "Adding php pre scripts ... "
-    cp -a /tmp/src/php-pre-start /opt/app-root/src
-    echo "done"
+    if [ -d /tmp/src/php-pre-start ] ; then
+        echo -n "Adding php pre scripts ... "
+        cp -a /tmp/src/php-pre-start/* ${PHP_CONTAINER_SCRIPTS_PATH}
+        echo "done"
+    fi
 }
 
 secret() {
