@@ -7,6 +7,7 @@
 #
 
 PLUGIN_LANGUAGES=/opt/app-root/plugin-languages
+THEME_LANGUAGES=/opt/app-root/theme-languages
 
 function create_directory() {
     DIRECTORY=$1
@@ -23,10 +24,13 @@ function setup_directories() {
 
     create_directory /opt/app-root/downloads
     create_directory ${PLUGIN_LANGUAGES}
+    create_directory ${THEME_LANGUAGES}
+    create_directory /opt/app-root/bin
+
     create_directory /opt/app-root/data/languages
     create_directory /opt/app-root/data/plugin-languages
+    create_directory /opt/app-root/data/theme-languages
     create_directory /opt/app-root/data/uploads
-    create_directory /opt/app-root/bin
 
     echo "done"
 
@@ -76,7 +80,7 @@ function install_plugin_languages {
 
             cp -a "${PLUGIN}/languages"/* "${PLUGIN_LANGUAGES}/${PLUGIN}"
     
-            echo -n "linking language directory ... "
+            echo -n "linking ... "
             rm -rf "${PLUGIN}/languages"
             ln -sf "/opt/app-root/data/plugin-languages/${PLUGIN}" "${PLUGIN}/languages"
 
@@ -118,6 +122,35 @@ function install_themes {
 
     popd &> /dev/null
 }
+
+
+function install_theme_languages {
+    pushd . &> /dev/null
+
+    cd ./wp-content/themes
+
+    for THEME in * ; do
+        echo -ne "Preparing language for theme '${THEME}' ... "
+
+        if [ -d "${THEME}/languages" ] ; then
+            create_directory "${THEME_LANGUAGES}/${THEME}"
+            create_directory "/opt/app-root/data/theme-languages/${THEME}"
+
+            cp -a "${THEME}/languages"/* "${THEME_LANGUAGES}/${THEME}"
+
+            echo -n "linking ... "
+            rm -rf "${THEME}/languages"
+            ln -sf "/opt/app-root/data/theme-languages/${THEME}" "${THEME}/languages"
+
+            echo "done"
+        else
+            echo "skipped"
+        fi
+    done
+
+    popd &> /dev/null
+}
+
 
 function install_languages() {
     if [ ! -f /tmp/src/languages.cfg ] ; then
@@ -395,7 +428,10 @@ download_wpcli ${WP_CLI_VERSION}
 install_wordpress
 install_data_dir
 install_languages
+
 install_themes
+install_theme_languages
+
 install_plugins
 install_plugin_languages
 

@@ -6,6 +6,9 @@ TARGET_DIR=${APP_ROOT}/src/wp-content/languages
 PLUGIN_SOURCE_DIR=${APP_ROOT}/plugin-languages
 PLUGIN_DIR=${APP_ROOT}/src/wp-content/plugins
 
+THEME_SOURCE_DIR=${APP_ROOT}/theme-languages
+THEME_DIR=${APP_ROOT}/src/wp-content/themes
+
 function create_directory() {
     DIRECTORY=$1
 
@@ -48,7 +51,7 @@ cd ${PLUGIN_DIR}
 
 for PLUGIN in * ; do
     if [ -d "${PLUGIN}/languages" -a ! -f "${PLUGIN}/languages/.installed" ] ; then
-        echo -n "copying ... "
+        echo -n "copying '${PLUGIN}' ... "
 
         cp "${PLUGIN_SOURCE_DIR}/${PLUGIN}"/* "${PLUGIN}/languages"
 
@@ -56,7 +59,36 @@ for PLUGIN in * ; do
         touch "${PLUGIN}/languages/.installed"
         echo "done"
     else
-        echo "${PLUGIN} skipped ... "
+        echo "'${PLUGIN}' skipped ... "
+    fi
+done
+
+
+echo -n "Removing old theme languages ... "
+create_directory ${APP_ROOT}/data/theme-languages
+
+cd "${APP_ROOT}/data/theme-languages"
+for THEME in * ; do
+    if [ ! -d "${THEME_DIR}/${THEME}" ] ; then
+        echo "${THEME} ... "
+        rm -rf "${THEME}"
+    fi
+done
+
+echo -n "Copying theme languags ... "
+cd ${THEME_DIR}
+
+for THEME in * ; do
+    if [ -d "${THEME}/languages" -a ! -f "${THEME}/languages/.installed" ] ; then
+        echo -n "copying '${THEME}' ... "
+
+        cp "${THEME_SOURCE_DIR}/${THEME}"/* "${THEME}/languages"
+
+        echo -n "marking theme as installed ... "
+        touch "${THEME}/languages/.installed"
+        echo "done"
+    else
+        echo "'${THEME}' skipped ... "
     fi
 done
 
