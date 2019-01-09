@@ -74,13 +74,14 @@ function install_plugin_languages {
     for PLUGIN in * ; do
         echo -ne "Preparing language for plugin '${PLUGIN}' ... "
 
-        if [ -d "${PLUGIN}/languages" ] ; then
+        if [ -d "${PLUGIN}"/languages -a -n "${PLUGIN}"/languages/* ] ; then
             create_directory "${PLUGIN_LANGUAGES}/${PLUGIN}"
             create_directory "/opt/app-root/data/plugin-languages/${PLUGIN}"
 
+            echo -n "copy ... "
             cp -a "${PLUGIN}/languages"/* "${PLUGIN_LANGUAGES}/${PLUGIN}"
     
-            echo -n "linking ... "
+            echo -n "link ... "
             rm -rf "${PLUGIN}/languages"
             ln -sf "/opt/app-root/data/plugin-languages/${PLUGIN}" "${PLUGIN}/languages"
 
