@@ -319,6 +319,8 @@ if (strpos(\$_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false) \$_SERVER['H
 define('WP_SITEURL',getenv('WORDPRESS_SITE_URL'));" ${CONFIG}
     sed -i "/'DB_COLLATE', '');/a\\
 define('WP_HOME',getenv('WORDPRESS_HOME_URL'));" ${CONFIG}
+    sed -i "/'DB_COLLATE', '');/a\\
+define('WP_LANG_DIR', getenv('APP_ROOT') . "/data/languages");" ${CONFIG}
 
 
     sed -i "s/'DB_NAME', *'database_name_here'/'DB_NAME', getenv('DATABASE_NAME')/" ${CONFIG}
