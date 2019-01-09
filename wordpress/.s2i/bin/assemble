@@ -78,7 +78,7 @@ function install_plugin_languages {
     
             echo -n "linking language directory ... "
             rm -rf "${PLUGIN}/languages"
-            ln -sf "/opt/app-root/data/plugin-languages/${PLUGIN}" "${PLUGIN}/languages/"
+            ln -sf "/opt/app-root/data/plugin-languages/${PLUGIN}" "${PLUGIN}/languages"
 
             echo "done"
         else
