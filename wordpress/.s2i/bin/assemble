@@ -68,17 +68,21 @@ function install_plugin_languages {
     cd ./wp-content/plugins
 
     for PLUGIN in * ; do
-        echo -ne "Preparing language for plugin '${PLUGIN}' ... "
-        create_directory "${PLUGIN_LANGUAGES}/${PLUGIN}"
-        create_directory "/opt/app-root/data/plugin-languages/${PLUGIN}"
+            echo -ne "Preparing language for plugin '${PLUGIN}' ... "
+        if [ -d "${PLUGIN}/languages" ] ; then
+            create_directory "${PLUGIN_LANGUAGES}/${PLUGIN}"
+            create_directory "/opt/app-root/data/plugin-languages/${PLUGIN}"
 
-        cp -a "${PLUGIN}/languages/*" "${PLUGIN_LANGUAGES}/${PLUGIN}"
+            cp -a "${PLUGIN}/languages/*" "${PLUGIN_LANGUAGES}/${PLUGIN}"
+    
+            echo -n "linking language directory ... "
+            rm -rf "${PLUGIN}/languages"
+            ln -sf "/opt/app-root/data/plugin-languages/${PLUGIN}" "${PLUGIN}/languages/"
 
-        echo -n "linking language directory ... "
-        rm -rf "${PLUGIN}/languages"
-        ln -sf "/opt/app-root/data/plugin-languages/${PLUGIN}" "${PLUGIN}/languages/"
-
-        echo "done"
+            echo "done"
+        else
+            echo "skipped"
+        fi
     done
 
     popd &> /dev/null
