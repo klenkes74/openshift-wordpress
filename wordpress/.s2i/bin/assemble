@@ -6,14 +6,7 @@
 # under certain conditions; type `show c' for details.
 #
 
-function setup_directories() {
-    mkdir -p /opt/app-root/downloads
-    mkdir -p /opt/app-root/data/languages
-    mkdir -p /opt/app-root/data/uploads
-    mkdir -p /opt/app-root/bin
-    mkdir -p /opt/app-root/languages
-    PATH="${PATH}:/opt/app-root/bin"
-}
+PLUGIN_LANGUAGES=/opt/app-root/plugin-languages
 
 function create_directory() {
     DIRECTORY=$1
@@ -22,6 +15,22 @@ function create_directory() {
         echo -ne "creating ${DIRECTORY} ... "
         mkdir -p ${DIRECTORY}
     fi
+}
+
+
+function setup_directories() {
+    echo -ne "Preparing directories ... "
+
+    create_directory /opt/app-root/downloads
+    create_directory ${PLUGIN_LANGUAGES}
+    create_directory /opt/app-root/data/languages
+    create_directory /opt/app-root/data/plugin-languages
+    create_directory /opt/app-root/data/uploads
+    create_directory /opt/app-root/bin
+
+    echo "done"
+
+    PATH="${PATH}:/opt/app-root/bin"
 }
 
 function install_plugins {
@@ -49,6 +58,28 @@ function install_plugins {
     done
 
     mv /tmp/src/plugins.cfg /tmp/src/plugins.base
+
+    popd &> /dev/null
+}
+
+function install_plugin_languages {
+    pushd . &> /dev/null
+
+    cd ./wp-content/plugins
+
+    for PLUGIN in * ; do
+        echo -ne "Preparing language for plugin '${PLUGIN}' ... "
+        create_directory "${PLUGIN_LANGUAGES}/${PLUGIN}"
+        create_directory "/opt/app-root/data/plugin-languages/${PLUGIN}"
+
+        cp -a "${PLUGIN}/languages/*" "${PLUGIN_LANGUAGES}/${PLUGIN}"
+
+        echo -n "linking language directory ... "
+        rm -rf "${PLUGIN}/languages"
+        ln -sf "/opt/app-root/data/plugin-languages/${PLUGIN}" "${PLUGIN}/languages/"
+
+        echo "done"
+    done
 
     popd &> /dev/null
 }
@@ -361,6 +392,7 @@ install_data_dir
 install_languages
 install_themes
 install_plugins
+install_plugin_languages
 
 enable_webdav ${WEBDAV_AUTHENTICATION_REALM}
 
