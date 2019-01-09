@@ -54,20 +54,19 @@ cd ${PLUGIN_DIR}
 
 for PLUGIN in * ; do
     if [ -d "${PLUGIN_SOURCE_DIR}/${PLUGIN}" ] ; then
-        if [! -f "${PLUGIN}/languages/.installed" ] ; then
+        if [ ! -f "${PLUGIN_PERSISTENT_DIR}/${PLUGIN}/.installed" ] ; then
+            echo -n "${PLUGIN} ... "
+
             create_directory "${PLUGIN_PERSISTENT_DIR}/${PLUGIN}"
 
-            echo -n "copy '${PLUGIN}' ... "
-            cp "${PLUGIN_SOURCE_DIR}/${PLUGIN}"/* "${PLUGIN}/languages"
+            cp "${PLUGIN_SOURCE_DIR}/${PLUGIN}"/* "${PLUGIN_PERSISTENT_DIR}/${PLUGIN}"
 
-            echo -n "marking plugin as installed ... "
-            touch "${PLUGIN}"/languages/.installed
-            echo "done"
+            touch "${PLUGIN_PERSISTENT_DIR}/${PLUGIN}"/.installed
         else
-            echo "'${PLUGIN}' alread installed"
+            echo -n "'${PLUGIN}' alread installed"
         fi
     else
-        echo "'${PLUGIN}' has no language files"
+        echo -n "'${PLUGIN}' has no language files"
     fi
 done
 
@@ -88,20 +87,19 @@ cd ${THEME_DIR}
 
 for THEME in * ; do
     if [ -d "${THEME_SOURCE_DIR}/${THEME}" ] ; then
-        if [ ! -f "${THEME}/languages/.installed" ] ; then
-            create_directory "${THEME_PERSISTENT_DIR}/${PLUGIN}"
+        if [ ! -f "${THEME_PERSISTENT_DIR}/${THEME}/.installed" ] ; then
+            echo -n "${THEME} ... "
 
-            echo -n "copy '${THEME}' ... "
-            cp "${THEME_SOURCE_DIR}/${THEME}"/* "${THEME}/languages"
+            create_directory "${THEME_PERSISTENT_DIR}/${THEME}"
 
-            echo -n "marking theme as installed ... "
-            touch "${THEME}"/languages/.installed
-            echo "done"
+            cp "${THEME_SOURCE_DIR}/${THEME}"/* "${THEME_PERSISTENT_DIR}/${THEME}"
+
+            touch "${THEME_PERSISTENT_DIR}/${THEME}"/.installed
         else
-            echo "'${THEME}' alread installed"
+            echo -n "'${THEME}' alread installed"
         fi
     else
-        echo "'${THEME}' has no language files"
+        echo -n "'${THEME}' has no language files"
     fi
 done
 
