@@ -89,6 +89,15 @@ function copy_user_content() {
         chmod 644 .htaccess
         echo "done"
     fi
+
+    echo -n "Preparing languages directory ... "
+    if [ -d ./wp-content/languages ] ; then
+
+
+        echo "done"
+    else
+        echo "skipped"
+    fi
 }
 
 function install_authors_notepad_theme() {
