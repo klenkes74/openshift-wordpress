@@ -17,7 +17,7 @@ function create_directory() {
 
 
 echo -n "Copying languages to ${TARGET_DIR} ... "
-
+create_directory ${APP_ROOT}/data/languages
 if [ ! -f "${TARGET_DIR}/.installed" ] ; then
     create_directory ${TARGET_DIR}
 
