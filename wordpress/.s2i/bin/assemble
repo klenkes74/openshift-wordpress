@@ -11,6 +11,7 @@ function setup_directories() {
     mkdir -p /opt/app-root/data/languages
     mkdir -p /opt/app-root/data/uploads
     mkdir -p /opt/app-root/bin
+    mkdir -p /opt/app-root/languages
     PATH="${PATH}:/opt/app-root/bin"
 }
 
@@ -90,9 +91,9 @@ function install_languages() {
 
     pushd . &> /dev/null
 
-    create_directory ./wp-content/languages/
+    create_directory /opt/app-root/languages/
     echo "done"
-    cd ./wp-content/languages/
+    cd /opt/app-root/languages/
 
     for LANGUAGE_DEFINITION in `cat /tmp/src/languages.cfg` ; do
         LANGUAGE="$(echo ${LANGUAGE_DEFINITION} | cut -d: -f1)"
@@ -105,8 +106,7 @@ function install_languages() {
         echo "done"
     done
 
-    mv /tmp/src/languages.cfg /tmp/src/languages.base
-
+    mv /tmp/src/languages.cfg /opt/app-root/languages/.languages.base
     popd &> /dev/null
 }
 
