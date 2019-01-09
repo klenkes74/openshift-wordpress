@@ -65,10 +65,10 @@ for PLUGIN in * ; do
 
             touch "${PLUGIN_PERSISTENT_DIR}/${PLUGIN}"/.installed
         else
-            echo -n "'${PLUGIN}' alread installed"
+            echo -n "'${PLUGIN}' alread installed ... "
         fi
     else
-        echo -n "'${PLUGIN}' has no language files"
+        echo -n "'${PLUGIN}' has no language files ... "
     fi
 done
 echo "done"
@@ -100,10 +100,10 @@ for THEME in * ; do
 
             touch "${THEME_PERSISTENT_DIR}/${THEME}"/.installed
         else
-            echo -n "'${THEME}' alread installed"
+            echo -n "'${THEME}' alread installed ... "
         fi
     else
-        echo -n "'${THEME}' has no language files"
+        echo -n "'${THEME}' has no language files ... "
     fi
 done
 echo "done"
