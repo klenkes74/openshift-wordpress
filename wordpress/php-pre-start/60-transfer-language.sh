@@ -50,14 +50,18 @@ echo -n "Copying plugin languags ... "
 cd ${PLUGIN_DIR}
 
 for PLUGIN in * ; do
-    if [ -d "${PLUGIN}/languages" -a ! -f "${PLUGIN}/languages/.installed" ] ; then
-        echo -n "copying '${PLUGIN}' ... "
+    if [ -d "${PLUGIN}/languages" ] ; then
+        if [! -f "${PLUGIN}/languages/.installed" ] ; then
+            echo -n "copying '${PLUGIN}' ... "
 
-        cp "${PLUGIN_SOURCE_DIR}/${PLUGIN}"/* "${PLUGIN}/languages"
+            cp "${PLUGIN_SOURCE_DIR}/${PLUGIN}"/* "${PLUGIN}/languages"
 
-        echo -n "marking plugin as installed ... "
-        touch "${PLUGIN}/languages/.installed"
-        echo "done"
+            echo -n "marking plugin as installed ... "
+            touch "${PLUGIN}/languages/.installed"
+            echo "done"
+        else
+            echo "'${PLUGIN}' skipped ... "
+        fi
     else
         echo "'${PLUGIN}' skipped ... "
     fi
@@ -79,14 +83,18 @@ echo -n "Copying theme languags ... "
 cd ${THEME_DIR}
 
 for THEME in * ; do
-    if [ -d "${THEME}/languages" -a ! -f "${THEME}/languages/.installed" ] ; then
-        echo -n "copying '${THEME}' ... "
+    if [ -d "${THEME}/languages" ] ; then
+        if [ ! -f "${THEME}/languages/.installed" ] ; then
+            echo -n "copying '${THEME}' ... "
 
-        cp "${THEME_SOURCE_DIR}/${THEME}"/* "${THEME}/languages"
+            cp "${THEME_SOURCE_DIR}/${THEME}"/* "${THEME}/languages"
 
-        echo -n "marking theme as installed ... "
-        touch "${THEME}/languages/.installed"
-        echo "done"
+            echo -n "marking theme as installed ... "
+            touch "${THEME}/languages/.installed"
+            echo "done"
+        else
+            echo "'${THEME}' skipped ... "
+        fi
     else
         echo "'${THEME}' skipped ... "
     fi
