@@ -30,12 +30,13 @@ if [ ! -f "${TARGET_DIR}/.installed" ] ; then
     echo -n "copying ... "
     cp -a "${SOURCE_DIR}"/* "${TARGET_DIR}"
 
-    echo -n "marking installed files ... "
     touch "${TARGET_DIR}"/.installed
     echo "done"
 else
     echo "skipped"
 fi
+echo "done"
+
 
 pushd . &> /dev/null
 echo -n "Removing old plugin languages ... "
@@ -44,10 +45,11 @@ create_directory ${PLUGIN_PERSISTENT_DIR}
 cd "${PLUGIN_PERSISTENT_DIR}"
 for PLUGIN in * ; do
     if [ ! -d "${PLUGIN_DIR}/${PLUGIN}" ] ; then
-        echo "${PLUGIN} ... "
+        echo -n "${PLUGIN} ... "
         rm -rf "${PLUGIN}"
     fi
 done
+echo "done"
 
 echo -n "Copying plugin languags ... "
 cd ${PLUGIN_DIR}
@@ -69,6 +71,7 @@ for PLUGIN in * ; do
         echo -n "'${PLUGIN}' has no language files"
     fi
 done
+echo "done"
 
 
 echo -n "Removing old theme languages ... "
@@ -77,10 +80,11 @@ create_directory "${THEM_PERSISTENT_DIR}"
 cd "${THEME_PERSISTENT_DIR}"
 for THEME in * ; do
     if [ ! -d "${THEME_DIR}/${THEME}" ] ; then
-        echo "${THEME} ... "
+        echo -n "${THEME} ... "
         rm -rf "${THEME}"
     fi
 done
+echo "done"
 
 echo -n "Copying theme languags ... "
 cd ${THEME_DIR}
@@ -102,6 +106,6 @@ for THEME in * ; do
         echo -n "'${THEME}' has no language files"
     fi
 done
+echo "done"
 
 popd &>/dev/null
-echo "done"
