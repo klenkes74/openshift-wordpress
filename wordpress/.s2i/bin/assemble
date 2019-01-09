@@ -75,7 +75,7 @@ function install_plugin_languages {
         echo -ne "Preparing language for plugin '${PLUGIN}' ... "
 
         if [ -d "${PLUGIN}"/languages ] ; then
-            if [ -n "${PLUGIN}"/languages/* ] ; then
+            if [ "$(ls -A ${PLUGIN}/languages)" ] ; then
                 create_directory "${PLUGIN_LANGUAGES}/${PLUGIN}"
                 create_directory "/opt/app-root/data/plugin-languages/${PLUGIN}"
 
