@@ -53,7 +53,7 @@ echo -n "Copying plugin languags ... "
 cd ${PLUGIN_DIR}
 
 for PLUGIN in * ; do
-    if [ -d "${PLUGIN_SOURCE_DIR}/${PLUGIN}/languages" ] ; then
+    if [ -d "${PLUGIN_SOURCE_DIR}/${PLUGIN}" ] ; then
         if [! -f "${PLUGIN}/languages/.installed" ] ; then
             create_directory "${PLUGIN_PERSISTENT_DIR}/${PLUGIN}"
 
@@ -87,7 +87,7 @@ echo -n "Copying theme languags ... "
 cd ${THEME_DIR}
 
 for THEME in * ; do
-    if [ -d "${THEME_SOURCE_DIR}/${THEME}/languages" ] ; then
+    if [ -d "${THEME_SOURCE_DIR}/${THEME}" ] ; then
         if [ ! -f "${THEME}/languages/.installed" ] ; then
             create_directory "${THEME_PERSISTENT_DIR}/${PLUGIN}"
 
