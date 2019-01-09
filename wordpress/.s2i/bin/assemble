@@ -141,9 +141,10 @@ function install_theme_languages {
             create_directory "${THEME_LANGUAGES}/${THEME}"
             create_directory "/opt/app-root/data/theme-languages/${THEME}"
 
+            echo -n "copy ... "
             cp -a "${THEME}/languages"/* "${THEME_LANGUAGES}/${THEME}"
 
-            echo -n "linking ... "
+            echo -n "link ... "
             rm -rf "${THEME}/languages"
             ln -sf "/opt/app-root/data/theme-languages/${THEME}" "${THEME}/languages"
 
