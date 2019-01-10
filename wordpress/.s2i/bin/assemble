@@ -425,6 +425,18 @@ __EOF__
     fi
 }
 
+function enable_languge_upgrades {
+    UPGRADE_PATH=/opt/app-root/data/upgrade
+    UPGRADE_MOUNT=/opt/app-root/src/wp-content/upgrade
+
+    echo -ne "Enable language updates ... "
+
+    create_diretory ${UPGRADE_PATH}
+    ln -s ${UPGRADE_PATH} ${UPGRADE_MOUNT}
+
+    echo "done"
+}
+
 setup_directories
 
 get_version WORDPRESS_VERSION
@@ -442,6 +454,8 @@ install_theme_languages
 
 install_plugins
 install_plugin_languages
+
+enable_language_upgrades
 
 enable_webdav ${WEBDAV_AUTHENTICATION_REALM}
 
