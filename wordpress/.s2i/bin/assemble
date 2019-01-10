@@ -425,7 +425,7 @@ __EOF__
     fi
 }
 
-function enable_languge_upgrades() {
+function enable_language_upgrades() {
     UPGRADE_PATH=/opt/app-root/data/upgrade
     UPGRADE_MOUNT=/opt/app-root/src/wp-content/upgrade
 
