@@ -431,7 +431,7 @@ function enable_language_upgrades() {
 
     echo -ne "Enable language updates ... "
 
-    create_diretory ${UPGRADE_PATH}
+    create_directory ${UPGRADE_PATH}
     ln -s ${UPGRADE_PATH} ${UPGRADE_MOUNT}
 
     echo "done"
