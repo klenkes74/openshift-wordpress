@@ -12,6 +12,8 @@ THEME_SOURCE_DIR=${APP_ROOT}/theme-languages
 THEME_DIR=${APP_ROOT}/src/wp-content/themes
 THEME_PERSISTENT_DIR=${APP_ROOT}/data/theme-languages
 
+UPGRADE_DIR=${APP_ROOT}/upgrade
+
 function create_directory() {
     DIRECTORY=$1
 
