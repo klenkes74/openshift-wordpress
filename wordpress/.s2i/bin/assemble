@@ -360,6 +360,10 @@ define('WP_DEBUG_DISPLAY', getenv('WP_DEBUG_DISPLAY'));" ${CONFIG}
     sed -i "s/'NONCE_SALT', *'put your unique phrase here'/'NONCE_SALT', '`secret`'/" ${CONFIG}
 
     echo "done"
+    
+    echo "=== Config ============================================= BEGIN ==="
+    cat ${CONFIG}
+    echo "=== Config =============================================== END ==="
 }
 
 install_data_dir() {
