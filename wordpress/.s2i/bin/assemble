@@ -313,33 +313,15 @@ function install_wordpress() {
     CONFIG=wp-config.php
     mv wp-config-sample.php ${CONFIG}
 
-    sed -i "/'DB_COLLATE', '');/a\\
-define('WPLANG',(getenv('WPLANG') ?: 'de_DE'));" ${CONFIG}
-
-    sed -i "/'DB_COLLATE', '');/a\\
-define('FS_METHOD', 'direct');" ${CONFIG}
-
-    # Edit the wp-config-sample.php to force use of a secure connection
-    # for login and adminstration.
-
-    sed -i "/'DB_COLLATE', '');/a\\
-define( 'FORCE_SSL_ADMIN', true );" ${CONFIG}
-
-    # Edit the wp-config-sample.php to ensure that static files are served
-    # up over same protocol as request to avoid mixed content errors.
-
-    # There is no SSL-less website anymore. period.
-    sed -i "/'DB_COLLATE', '');/a\\
-$_SERVER['HTTPS']='on';" ${CONFIG}
-    sed -i "/'DB_COLLATE', '');/a\\
-define('WP_SITEURL',getenv('WORDPRESS_SITE_URL'));" ${CONFIG}
-    sed -i "/'DB_COLLATE', '');/a\\
-define('WP_HOME',getenv('WORDPRESS_HOME_URL'));" ${CONFIG}
-    sed -i "/'DB_COLLATE', '');/a\\
-define('WP_LANG_DIR', getenv('APP_ROOT') . "\"/data/languages\"");" ${CONFIG}
-    sed -i "/'DB_COLLATE', '');/a\\
-define('WP_DEBUG_LOG', getenv('WP_DEBUG_LOG'));" ${CONFIG}
-    sed -i "/'DB_COLLATE', '');/a\\
+    sed -i "/'DB_COLLATE', '' );/a\\
+define('WPLANG',(getenv('WPLANG') ?: 'de_DE'));\\
+define('FS_METHOD', 'direct');\\
+define( 'FORCE_SSL_ADMIN', true );\\
+if (strpos($_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false) $_SERVER['HTTPS']='on';\\
+define('WP_SITEURL',getenv('WORDPRESS_SITE_URL'));\\
+define('WP_HOME',getenv('WORDPRESS_HOME_URL'));\\
+define('WP_LANG_DIR', getenv('APP_ROOT') . "\"/data/languages\"");\\
+define('WP_DEBUG_LOG', getenv('WP_DEBUG_LOG'));\\
 define('WP_DEBUG_DISPLAY', getenv('WP_DEBUG_DISPLAY'));" ${CONFIG}
 
 
