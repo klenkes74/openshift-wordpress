@@ -330,7 +330,7 @@ define('WP_LANG_DIR', getenv('APP_ROOT') . "\"/data/languages\"");" ${CONFIG}
     sed -i "s/\$table_prefix *= *'wp_';/\$table_prefix = getenv('DATABASE_TABLE_PREFIX');/" ${CONFIG}
 
     sed -i "s/'WP_DEBUG', *false/'WP_DEBUG', getenv('WP_DEBUG')/" ${CONFIG}
-    sed -i "/'WP_DEBUG', getenv('WP_DEBUG'));/a\\
+    sed -i "/'WP_DEBUG', getenv('WP_DEBUG') );/a\\
 define('WP_DEBUG_LOG', getenv('WP_DEBUG_LOG'));\\
 define('WP_DEBUG_DISPLAY', getenv('WP_DEBUG_DISPLAY'));" ${CONFIG}
 
