@@ -321,6 +321,7 @@ if (strpos($_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false) $_SERVER['HTT
 define('WP_SITEURL',getenv('WORDPRESS_SITE_URL'));\\
 define('WP_HOME',getenv('WORDPRESS_HOME_URL'));\\
 define('WP_LANG_DIR', getenv('APP_ROOT') . "\"/data/languages\"");\\
+define('WP_DEBUG', getenv('WP_DEBUG'));\\
 define('WP_DEBUG_LOG', getenv('WP_DEBUG_LOG'));\\
 define('WP_DEBUG_DISPLAY', getenv('WP_DEBUG_DISPLAY'));" ${CONFIG}
 
