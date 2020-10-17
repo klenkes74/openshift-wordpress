@@ -64,6 +64,16 @@ parameters:
   description: 'Activate the debugging of WordPress'
   value: 'false'
   required: true
+- name: 'DEBUG_MODE_DISPLAY'
+  display: 'Display Errors'
+  description: 'Activate the debugging of WordPress (WP_DEBUG_DISPLAY)'
+  value: 'false'
+  required: true
+- name: 'DEBUG_MODE_LOG'
+  display: 'Log Errors'
+  description: 'Activate the debugging of WordPress (WP_DEBUG_LOG)'
+  value: 'false'
+  required: true
 - name: 'WEBSERVER_MEMORY_LIMIT'
   displayName: 'Maximum used memory (Webserver)'
   description: 'Maximum memory usage of this pod.'
@@ -345,6 +355,10 @@ objects:
               value: 'https://${APPLICATION_URL}'
             - name: 'WP_DEBUG'
               value: "${DEBUG_MODE}"
+            - name: 'WP_DEBUG_DISPLAY'
+              value: "${DEBUG_MODE_DISPLAY}"
+            - name: 'WP_DEBUG_LOG'
+              value: "${DEBUG_MODE_LOG}"
             - name: 'WPLANG'
               value: '${DEFAULT_LANGUAGE}'
             - name: 'DATABASE_SERVICE_NAME'
