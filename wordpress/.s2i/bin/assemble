@@ -37,6 +37,22 @@ function setup_directories() {
     PATH="${PATH}:/opt/app-root/bin"
 }
 
+function repair_plugin_autoptimize {
+    if [ -d ./wp-content/plugins/autoptimize ] ; then
+        pushd . &> /dev/null
+        cd ./wp-content/plugins
+  
+        echo -ne "Repair plugin autoptimze ... "
+    
+        cp autoptimize/config/autoptimize_404_handler.php ../autoptimize_404_handler.php
+        
+        echo "done"
+        popd . &> /dev/null
+    else
+        echo "Plugin autoptimize not installed - no need to fix it"
+    fi
+}
+
 function install_plugins {
     if [ ! -f /tmp/src/plugins.cfg ] ; then
         echo "No plugins to install."
@@ -456,6 +472,8 @@ install_theme_languages
 
 install_plugins
 install_plugin_languages
+
+repair_plugin_autoptimize
 
 enable_language_upgrades
 
