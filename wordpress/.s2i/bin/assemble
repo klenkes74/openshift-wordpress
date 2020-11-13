@@ -46,8 +46,8 @@ function repair_plugin_autoptimize {
     
         cp autoptimize/config/autoptimize_404_handler.php ../autoptimize_404_handler.php
         
-        echo "done"
         popd . &> /dev/null
+        echo "done"
     else
         echo "Plugin autoptimize not installed - no need to fix it"
     fi
@@ -308,6 +308,8 @@ function install_wordpress() {
     rm -rf wp-content/themes/twentysixteen
     echo -n " 2017 ... "
     rm -rf wp-content/themes/twentyseventeen
+    echo -n " 2019 ... "
+    rm -rf wp-content/themes/twentynineteen
     echo "done"
 
     echo -n "Configuring wordpress ... "
