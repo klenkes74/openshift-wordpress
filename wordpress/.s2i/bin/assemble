@@ -46,7 +46,7 @@ function repair_plugin_autoptimize {
     
         cp autoptimize/config/autoptimize_404_handler.php ../autoptimize_404_handler.php
         
-        popd . &> /dev/null
+        popd &> /dev/null
         echo "done"
     else
         echo "Plugin autoptimize not installed - no need to fix it"
