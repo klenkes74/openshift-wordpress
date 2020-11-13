@@ -387,7 +387,7 @@ install_data_dir() {
 }
 
 secret() {
-    python -c 'import random; import string; print("".join([random.SystemRandom().choice(string.ascii_letters+string.digits) for i in range(50)]))'
+    LC_CTYPE=C tr -dc A-Za-z0-9 < /dev/urandom | fold -w ${1:-50} | head -n 1
 }
 
 function enable_webdav() {
