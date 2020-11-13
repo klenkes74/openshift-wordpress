@@ -207,7 +207,8 @@ function get_version() {
 
   if [ -z ${!__resultvar+x} ] ; then
       echo -ne "Checking current wordpress version ... "
-      myresult=$(curl -s "https://api.wordpress.org/core/version-check/1.7/" | python -c 'import sys, json; latest = json.load(sys.stdin)["offers"][0]; print(latest["version"] if latest["response"] == "upgrade" else "4.9.8")')
+      myresult=$(curl -s "https://api.wordpress.org/core/version-check/1.7/" | ./JSON.sh -n -s -p -l|grep '"offers",0,"version"'|cut -d"	" -f2|tr -d "\"")
+# python -c 'import sys, json; latest = json.load(sys.stdin)["offers"][0]; print(latest["version"] if latest["response"] == "upgrade" else "4.9.8")')
       echo "${myresult} ... done"
   else
       myresult=${!__resultvar}
