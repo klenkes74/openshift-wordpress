@@ -208,6 +208,8 @@ function get_version() {
   if [ -z ${!__resultvar+x} ] ; then
 echo "----"
 ls -la .
+pwd
+find / -iname "JSON.sh"
 echo "----"
       echo -ne "Checking current wordpress version ... "
       myresult=$(curl -s "https://api.wordpress.org/core/version-check/1.7/" | sh ./JSON.sh -n -s -p -l|grep '"offers",0,"version"'|cut -d"	" -f2|tr -d "\"")
