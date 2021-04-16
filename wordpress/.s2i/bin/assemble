@@ -310,8 +310,10 @@ function install_wordpress() {
     rm -rf wp-content/themes/twentyseventeen
     echo -n " 2019 ... "
     rm -rf wp-content/themes/twentynineteen
+    echo -n " 2020 ... "
+    rm -rf wp-content/themes/twentytwenty
     echo "done"
-
+    
     echo -n "Configuring wordpress ... "
     CONFIG=wp-config.php
     mv wp-config-sample.php ${CONFIG}
