@@ -322,7 +322,7 @@ function install_wordpress() {
 define('WPLANG',(getenv('WPLANG') ?: 'de_DE'));\\
 define('FS_METHOD', 'direct');\\
 define( 'FORCE_SSL_ADMIN', true );\\
-if (strpos(\$_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false) \$_SERVER['HTTPS']='on';\\
+if (array_key_exists('HTTP_X_FORWARDED_PROTO', \$_SERVER) && strpos(\$_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false) \$_SERVER['HTTPS']='on';\\
 define('WP_SITEURL',getenv('WORDPRESS_SITE_URL'));\\
 define('WP_HOME',getenv('WORDPRESS_HOME_URL'));\\
 define('WP_LANG_DIR', getenv('APP_ROOT') . "\"/data/languages\"");" ${CONFIG}
